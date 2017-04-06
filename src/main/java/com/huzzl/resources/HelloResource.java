@@ -2,7 +2,6 @@ package com.huzzl.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huzzl.core.Task;
 import com.huzzl.db.TaskDAO;
@@ -22,9 +21,9 @@ public class HelloResource {
 
     private final TaskDAO taskDao;
 
-    ObjectMapper mapper;
-    ObjectNode res;
-    ObjectNode childNode;
+    private ObjectMapper mapper;
+    private ObjectNode res;
+    private ObjectNode childNode;
 
     public HelloResource(TaskDAO taskDao) {
         this.taskDao = taskDao;
