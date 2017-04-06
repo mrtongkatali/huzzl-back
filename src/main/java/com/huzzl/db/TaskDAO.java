@@ -19,4 +19,17 @@ public class TaskDAO extends AbstractDAO<Task> {
     public List<Task> getAllTask() {
         return list(namedQuery("Task.allTask"));
     }
+
+    public Task findTaskById(long id) {
+        //return uniqueResult(currentSession().getNamedQuery("Task.findById").setParameter("id", id));
+        //return (Task) currentSession().getNamedQuery("Task.findById").setParameter("id", id);
+
+        Task task = uniqueResult(currentSession().getNamedQuery("Task.findById").setParameter("id", id));
+
+        if (task == null) {
+            task = null;
+        }
+
+        return task;
+    }
 }
