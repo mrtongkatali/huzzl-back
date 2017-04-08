@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huzzl.core.Task;
 import com.huzzl.db.TaskDAO;
+import com.huzzl.resources.response.ExceptionResponse;
+import com.huzzl.resources.response.HelloResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -30,38 +29,16 @@ public class HelloResource {
     }
 
     @GET
+    @Path("/sample1/{name}")
+    @UnitOfWork
     @Timed
-    @UnitOfWork
-    public List<Task> sayHelloWorld() {
-        return taskDao.getAllTask();
-    }
-
-    @GET
-    @Path("{id}")
-    @UnitOfWork
-    public Response getTaskById(@PathParam("id") long id) {
-        Task task = taskDao.findTaskById(id);
-
-        mapper      = new ObjectMapper();
-        childNode   = mapper.createObjectNode();
-
-        if(task != null) {
-            childNode.putPOJO("task", task);
-        }
-
-        res = mapper.createObjectNode();
-        res.put("status", "success");
-        res.putPOJO("data", childNode);
-
-        return Response.ok(res).build();
-    }
-
-    @GET
-    @Path("/sample/{name}")
-    @UnitOfWork
     public Response getResponse(@PathParam("name") String name) {
         mapper      = new ObjectMapper();
         childNode   = mapper.createObjectNode();
+
+        // http://stackoverflow.com/questions/32181395/jersey-custom-json-responses
+        // http://stackoverflow.com/questions/13431986/how-to-create-custom-json-xml-responses-in-my-web-service
+        // http://stackoverflow.com/questions/583973/jax-rs-jersey-how-to-customize-error-handling
 
         childNode.putPOJO("task", taskDao.getAllTask());
         childNode.putPOJO("count", taskDao.getAllTask().size());
@@ -70,6 +47,28 @@ public class HelloResource {
         res.put("status", "success");
         res.putPOJO("data", childNode);
 
-        return Response.ok(res).build();
+        return Response.ok(taskDao.getAllTask()).build();
     }
+
+    @GET
+    @Path("/sample/task")
+    @UnitOfWork
+    @Timed
+    public HelloResponse<Task> getAllTask() {
+        List<Task> task = taskDao.getAllTask();
+        return new HelloResponse<Task>(task);
+    }
+
+    @GET
+    @Path("/sample/task/{id}")
+    @UnitOfWork
+    @Timed
+    public HelloResponse<Task> getTaskById(@PathParam("id") Long id) {
+        Task task = taskDao.findTaskById(id);
+
+        //throw new ExceptionResponse("Invalid Login");
+        return new HelloResponse<Task>(task);
+    }
+
+
 }

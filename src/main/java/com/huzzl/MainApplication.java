@@ -1,7 +1,9 @@
 package com.huzzl;
 
 import com.huzzl.core.Task;
+import com.huzzl.core.Users;
 import com.huzzl.db.TaskDAO;
+import com.huzzl.db.UsersDAO;
 import com.huzzl.resources.HelloResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -20,7 +22,7 @@ public class MainApplication extends Application<MainConfiguration> {
     private HibernateBundle<MainConfiguration> hibernateBundle;
     private SessionFactory sessionFactory;
     private TaskDAO taskDao;
-
+    private UsersDAO usersDao;
 
     @Override
     public String getName() {
@@ -29,7 +31,8 @@ public class MainApplication extends Application<MainConfiguration> {
 
     public static HibernateBundle<MainConfiguration> createHibernateBundle() {
         return new HibernateBundle<MainConfiguration>(
-                Task.class
+                Task.class,
+                Users.class
         ) {
 
             @Override
@@ -73,8 +76,8 @@ public class MainApplication extends Application<MainConfiguration> {
 
         this.sessionFactory = hibernateBundle.getSessionFactory();
 
-        this.taskDao = new TaskDAO(sessionFactory);
-
+        this.taskDao    = new TaskDAO(sessionFactory);
+        this.usersDao   = new UsersDAO(sessionFactory);
 
         env.jersey().register(new HelloResource(taskDao));
 
