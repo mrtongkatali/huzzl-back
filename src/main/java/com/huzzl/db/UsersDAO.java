@@ -10,4 +10,12 @@ public class UsersDAO extends AbstractDAO<Users> {
         super(sessionFactory);
     }
 
+    public Users create(Users user) {
+        return persist(user);
+    }
+
+    public Users findUserByEmailAddress(String email) {
+        Users u = uniqueResult(currentSession().getNamedQuery("Users.findByEmail").setParameter("email", email));
+        return (u == null ? null : u);
+    }
 }

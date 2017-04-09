@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huzzl.core.Task;
 import com.huzzl.db.TaskDAO;
-import com.huzzl.resources.response.ExceptionResponse;
 import com.huzzl.resources.response.HelloResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -39,6 +38,8 @@ public class HelloResource {
         // http://stackoverflow.com/questions/32181395/jersey-custom-json-responses
         // http://stackoverflow.com/questions/13431986/how-to-create-custom-json-xml-responses-in-my-web-service
         // http://stackoverflow.com/questions/583973/jax-rs-jersey-how-to-customize-error-handling
+        // http://www.makeinjava.com/jersey-bean-validation-rest-request-query-parameters-using-standard-annotation-example/
+        // https://engineering.vena.io/2016/04/25/dont-initialize-your-entities/
 
         childNode.putPOJO("task", taskDao.getAllTask());
         childNode.putPOJO("count", taskDao.getAllTask().size());
@@ -66,7 +67,8 @@ public class HelloResource {
     public HelloResponse<Task> getTaskById(@PathParam("id") Long id) {
         Task task = taskDao.findTaskById(id);
 
-        //throw new ExceptionResponse("Invalid Login");
+        //throw new WebApplicationException(new IllegalArgumentException("Date Header was not specified"), Response.Status.BAD_REQUEST);
+
         return new HelloResponse<Task>(task);
     }
 

@@ -4,6 +4,7 @@ import com.huzzl.core.Task;
 import com.huzzl.core.Users;
 import com.huzzl.db.TaskDAO;
 import com.huzzl.db.UsersDAO;
+import com.huzzl.resources.AuthResource;
 import com.huzzl.resources.HelloResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -80,6 +81,7 @@ public class MainApplication extends Application<MainConfiguration> {
         this.usersDao   = new UsersDAO(sessionFactory);
 
         env.jersey().register(new HelloResource(taskDao));
+        env.jersey().register(new AuthResource(usersDao));
 
 
     }
