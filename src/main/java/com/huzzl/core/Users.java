@@ -1,13 +1,15 @@
 package com.huzzl.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.jackson.JsonSnakeCase;
 import org.hibernate.validator.constraints.Email;
 
-import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
+import javax.validation.constraints.Size;
+import java.security.Principal;
 
 @Entity
 @Table(name="users")
@@ -20,6 +22,7 @@ import java.util.Objects;
 )
 
 @JsonSnakeCase
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Users extends BaseEntity {
 
     @NotNull
@@ -30,7 +33,11 @@ public class Users extends BaseEntity {
     @Column(name="lastname")
     private String lastName;
 
+    @Size(min = 8, max = 25, message = "The length of password should be between 8 to 25")
+    public transient String password;
+
     @NotNull
+    @Email
     @Column(name="email_address", unique = true)
     private String emailAddress;
 
@@ -46,6 +53,10 @@ public class Users extends BaseEntity {
         this.status         = status;
     }
 
+    public Users(String email_address) {
+        this.emailAddress = email_address;
+    }
+
     @JsonProperty
     public String getFirstName() { return firstName; }
 
@@ -53,11 +64,12 @@ public class Users extends BaseEntity {
     public String getLastName() { return lastName; }
 
     @JsonProperty
-    @Email
     public String getEmailAddress() { return emailAddress; }
 
     @JsonProperty
     public Integer status() { return status; }
+
+    public String getPassword() { return password; }
 
 
 }

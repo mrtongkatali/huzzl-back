@@ -2,7 +2,6 @@ CREATE TABLE user_login
 (
     id bigserial PRIMARY KEY,
     user_id INT,
-    email_address VARCHAR(50) UNIQUE,
     password_salt VARCHAR(255),
     password_hash VARCHAR(255),
     date_added TIMESTAMP default NULL,

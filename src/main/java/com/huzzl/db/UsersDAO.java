@@ -14,6 +14,11 @@ public class UsersDAO extends AbstractDAO<Users> {
         return persist(user);
     }
 
+    public Users findById(Long id) {
+        Users u = uniqueResult(currentSession().getNamedQuery("Users.findById").setParameter("email", id));
+        return (u == null ? null : u);
+    }
+
     public Users findUserByEmailAddress(String email) {
         Users u = uniqueResult(currentSession().getNamedQuery("Users.findByEmail").setParameter("email", email));
         return (u == null ? null : u);

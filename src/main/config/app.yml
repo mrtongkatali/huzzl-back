@@ -2,6 +2,8 @@ template: Hello, %s!
 
 defaultName: Stranger
 
+jwtTokenSecret: dfwzsdzwh823zebdwdz772632gdsbd
+
 database:
   # the name of your JDBC driver
   driverClass: org.postgresql.Driver

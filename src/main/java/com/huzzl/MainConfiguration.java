@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.UnsupportedEncodingException;
 
 
 public class MainConfiguration extends Configuration {
@@ -17,6 +18,9 @@ public class MainConfiguration extends Configuration {
 
     @NotEmpty
     private String defaultName = "Stranger";
+
+    @NotEmpty
+    private String jwtTokenSecret = "dfwzsdzwh823zebdwdz772632gdsbd";
 
     @Valid
     @NotNull
@@ -42,5 +46,9 @@ public class MainConfiguration extends Configuration {
 
     public String getTemplate() {
         return template;
+    }
+
+    public byte[] getJwtTokenSecret() throws UnsupportedEncodingException {
+        return jwtTokenSecret.getBytes("UTF-8");
     }
 }

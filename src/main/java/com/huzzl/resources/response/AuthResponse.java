@@ -13,5 +13,5 @@ public class AuthResponse<T> {
         users.put("data", user);
     }
 
-    public Map<String, Object> getUserObj() { return users; }
+    public Map<String, Object> getUsers() { return users; }
 }
