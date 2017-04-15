@@ -12,4 +12,9 @@ public class UserLoginDAO  extends AbstractDAO<UserLogin> {
     }
 
     public UserLogin create(UserLogin userLogin) { return persist(userLogin); }
+
+    public UserLogin findUserByEmailAddress(String email) {
+        UserLogin u = uniqueResult(currentSession().getNamedQuery("UsersLogin.findByEmailAddress").setParameter("email", email));
+        return (u == null ? null : u);
+    }
 }

@@ -1,9 +1,5 @@
 package com.huzzl.resources;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
-import com.huzzl.core.AuthUser;
-import com.huzzl.core.PasswordStorage;
 import com.huzzl.core.UserLogin;
 import com.huzzl.core.Users;
 import com.huzzl.db.UserLoginDAO;
@@ -16,6 +12,8 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.keys.HmacKey;
 import org.jose4j.lang.JoseException;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -44,7 +42,7 @@ public class AuthResource {
     @POST
     @Path("/register")
     @UnitOfWork
-    public AuthResponse<Users> registerUser(@Valid Users u) {
+    public Response registerUser(@Valid Users u) {
 
         /**
          *  Check whether the email already exists in the database
@@ -61,46 +59,71 @@ public class AuthResource {
             Users newUser = usersDao.create(u);
 
             try {
+
                 userLoginDao.create(new UserLogin( u.getPassword(), newUser ));
-            } catch (PasswordStorage.CannotPerformOperationException e) {
+
+                /**
+                 * Generate jwt token and add it response container
+                 */
+
+                final JwtClaims claims = new JwtClaims();
+                claims.setSubject("loggedUser");
+                claims.setExpirationTimeMinutesInTheFuture(30);
+                claims.setClaim("user_id", newUser.getId());
+                claims.setClaim("role", "default");
+                claims.setClaim("firstname", newUser.getFirstName());
+                claims.setClaim("lastname", newUser.getLastName());
+                claims.setClaim("email_address", newUser.getEmailAddress());
+
+                final JsonWebSignature jws = new JsonWebSignature();
+                jws.setPayload(claims.toJson());
+                jws.setAlgorithmHeaderValue(HMAC_SHA256);
+                jws.setKey(new HmacKey(tokenSecret));
+                jws.setDoKeyValidation(false);
+
+                return Response.ok(
+                        new AuthResponse<Users>(
+                                newUser,
+                                "Registration successful!",
+                                jws.getCompactSerialization(),
+                                Response.Status.OK.getStatusCode())
+                ).build();
+
+            } catch (Exception e) {
                 throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST);
             }
-
-            return new AuthResponse<Users>(newUser, "Success");
         }
     }
 
-    @GET
+    @POST
     @Path("/login")
-    public Response login() {
-
-        PasswordStorage pass = new PasswordStorage();
+    @UnitOfWork
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response login(@FormParam("username") String username, @FormParam("password") String password) {
 
         try {
-            String correctHash = pass.createHash("asd");
-            Boolean isCorrect  = pass.verifyPassword("asd", correctHash);
 
-            System.out.println("HASH VALUE : " + correctHash);
-            System.out.println("VERIFY PASSWORD : " + isCorrect);
+            UserLogin login = userLoginDao.findUserByEmailAddress(username);
 
-        } catch (PasswordStorage.CannotPerformOperationException e) {
-            System.out.println(e.getMessage().toString());
-            e.printStackTrace();
-        } catch (PasswordStorage.InvalidHashException e) {
-            e.printStackTrace();
+            return Response.ok().entity(login).build();
+
+
+        } catch (Exception e) {
+            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
         }
 
-        return Response.ok().entity("asdfdsafsadfasdfasdf").build();
+
     }
 
     @GET
     @Path("generate-valid-token")
     public Map<String, String> generateValidToken() {
+
         final JwtClaims claims = new JwtClaims();
         claims.setSubject("good-guy");
         claims.setExpirationTimeMinutesInTheFuture(30);
         claims.setClaim("user_id", "1");
-        claims.setClaim("role", "Administrator");
+        claims.setClaim("roles", "Admin");
         claims.setClaim("firstname", "Leo");
         claims.setClaim("lastname", "Diaz");
         claims.setClaim("email_address", "leoangelo.diaz@gmail.com");
@@ -114,19 +137,13 @@ public class AuthResource {
         try {
             return Collections.singletonMap("token", jws.getCompactSerialization());
         }
-        catch (JoseException e) { throw Throwables.propagate(e); }
+        catch (JoseException e) { throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST); }
     }
 
     @GET
-    @Path("/check-token")
-    public Map<String, Object> get(@Auth Principal user) {
-        return ImmutableMap.<String, Object>of("username", user.getName(), "id", ((AuthUser) user).getId());
-    }
-
-    @GET
-    @Path("/hash")
-    public Response getResponse() {
-        return Response.ok().entity("").build();
+    @Path("/sample-response-template")
+    public Response getResonseTemplate(@Auth Principal user) {
+        return Response.ok("ASDADAS").build();
     }
 
 }

@@ -9,27 +9,27 @@ public class AuthUser implements Principal {
     private final String firstname;
     private final String lastname;
     private final String emailAddress;
-    private final Set<String> roles;
+    private final String roles;
     private Long id;
 
-    public AuthUser(Long id, String firstname, String lastname, String email_address) {
+    public AuthUser(Long id, String firstname, String lastname, String email_address, String roles) {
         this.id             = id;
         this.firstname      = firstname;
         this.lastname       = lastname;
         this.emailAddress   = email_address;
-        this.roles          = null;
+        this.roles          = roles;
     }
+
+    public Long getId() { return id; }
+
+    public String getEmailAddress() { return emailAddress; }
+
+    public String getRoles() { return roles; }
 
     @Override
     public String getName() {
         return firstname + " " + lastname;
     }
-
-    public String getEmailAddress() { return emailAddress; }
-
-    public Long getId() { return id; }
-
-    public Set<String> getRoles() { return roles; }
 
     @Override
     public boolean equals(Object obj) {

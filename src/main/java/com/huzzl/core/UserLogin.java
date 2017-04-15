@@ -11,13 +11,16 @@ import javax.validation.constraints.NotNull;
         {
                 @NamedQuery( name = "UsersLogin.allUsers", query = "SELECT t FROM UserLogin t"),
                 @NamedQuery( name = "UsersLogin.findById", query = "SELECT t FROM UserLogin t WHERE t.id = :id"),
+                @NamedQuery( name = "UsersLogin.findByEmailAddress",
+                        query = "SELECT a FROM UserLogin a LEFT JOIN " +
+                                "Users b WHERE a.user = b.id AND b.emailAddress = :email"
+                )
         }
 )
 
 @JsonSnakeCase
 public class UserLogin extends BaseEntity {
 
-    @OneToOne
     @JoinColumn(name="user_id")
     private Users user;
 

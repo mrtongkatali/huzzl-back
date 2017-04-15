@@ -2,6 +2,7 @@ package com.huzzl;
 
 import com.github.toastshaman.dropwizard.auth.jwt.JwtAuthFilter;
 import com.huzzl.auth.JwtAuthenticator;
+import com.huzzl.auth.JwtAuthorizer;
 import com.huzzl.core.AuthUser;
 import com.huzzl.core.Task;
 import com.huzzl.core.UserLogin;
@@ -113,6 +114,7 @@ public class MainApplication extends Application<MainConfiguration> {
                     .setRealm("realm")
                     .setPrefix("bearer")
                     .setAuthenticator(new JwtAuthenticator())
+                    .setAuthorizer(new JwtAuthorizer())
                     .buildAuthFilter()
         ));
         env.jersey().register(new AuthValueFactoryProvider.Binder<>(Principal.class));

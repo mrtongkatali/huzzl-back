@@ -17,7 +17,7 @@ import java.security.Principal;
         {
                 @NamedQuery( name = "Users.allUsers", query = "SELECT t FROM Task t"),
                 @NamedQuery( name = "Users.findById", query = "SELECT t FROM Users t WHERE t.id = :id"),
-                @NamedQuery( name = "Users.findByEmail", query = "SELECT t FROM Users t WHERE t.emailAddress = :email")
+                @NamedQuery( name = "Users.findByEmail", query = "SELECT t FROM Users t WHERE t.emailAddress = :email"),
         }
 )
 
