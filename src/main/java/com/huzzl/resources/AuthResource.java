@@ -11,7 +11,6 @@ import io.dropwizard.hibernate.UnitOfWork;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.keys.HmacKey;
-import org.jose4j.lang.JoseException;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -20,8 +19,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.security.Principal;
-import java.util.Collections;
-import java.util.Map;
 
 import static org.jose4j.jws.AlgorithmIdentifiers.HMAC_SHA256;
 
