@@ -1,5 +1,6 @@
 package com.huzzl.resources;
 
+import com.huzzl.core.PasswordStorage;
 import com.huzzl.core.UserLogin;
 import com.huzzl.core.Users;
 import com.huzzl.db.UserLoginDAO;
@@ -54,7 +55,7 @@ public class AuthResource {
         } else {
 
             /**
-             * Register new user
+             * Create new user
              */
             Users newUser = usersDao.create(u);
 
@@ -63,29 +64,16 @@ public class AuthResource {
                 userLoginDao.create(new UserLogin( u.getPassword(), newUser ));
 
                 /**
-                 * Generate jwt token and add it response container
+                 * Generate jwt token and add it to response container
                  */
 
-                final JwtClaims claims = new JwtClaims();
-                claims.setSubject("loggedUser");
-                claims.setExpirationTimeMinutesInTheFuture(30);
-                claims.setClaim("user_id", newUser.getId());
-                claims.setClaim("role", "default");
-                claims.setClaim("firstname", newUser.getFirstName());
-                claims.setClaim("lastname", newUser.getLastName());
-                claims.setClaim("email_address", newUser.getEmailAddress());
-
-                final JsonWebSignature jws = new JsonWebSignature();
-                jws.setPayload(claims.toJson());
-                jws.setAlgorithmHeaderValue(HMAC_SHA256);
-                jws.setKey(new HmacKey(tokenSecret));
-                jws.setDoKeyValidation(false);
+                String token = generateJwtAuthToken(newUser, "loggedUser");
 
                 return Response.ok(
                         new AuthResponse<Users>(
                                 newUser,
                                 "Registration successful!",
-                                jws.getCompactSerialization(),
+                                token,
                                 Response.Status.OK.getStatusCode())
                 ).build();
 
@@ -105,39 +93,54 @@ public class AuthResource {
 
             UserLogin login = userLoginDao.findUserByEmailAddress(username);
 
-            return Response.ok().entity(login).build();
+            if(login != null) {
 
+                PasswordStorage pass = new PasswordStorage();
+
+                if(pass.verifyPassword(password, login.getPasswordHash()) == true) {
+
+                    String token = generateJwtAuthToken(login.user, "loggedUser");
+
+                    return Response.ok(new AuthResponse<Users>(
+                       login.user,
+                       "Authentication successful",
+                       token,
+                       Response.Status.OK.getStatusCode()
+                    )).build();
+                }
+            }
+
+            throw new WebApplicationException("Invalid credentials.", Response.Status.BAD_REQUEST);
 
         } catch (Exception e) {
-            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
+            throw new WebApplicationException("Invalid credentials.", Response.Status.BAD_REQUEST);
         }
-
 
     }
 
-    @GET
-    @Path("generate-valid-token")
-    public Map<String, String> generateValidToken() {
-
-        final JwtClaims claims = new JwtClaims();
-        claims.setSubject("good-guy");
-        claims.setExpirationTimeMinutesInTheFuture(30);
-        claims.setClaim("user_id", "1");
-        claims.setClaim("roles", "Admin");
-        claims.setClaim("firstname", "Leo");
-        claims.setClaim("lastname", "Diaz");
-        claims.setClaim("email_address", "leoangelo.diaz@gmail.com");
-
-        final JsonWebSignature jws = new JsonWebSignature();
-        jws.setPayload(claims.toJson());
-        jws.setAlgorithmHeaderValue(HMAC_SHA256);
-        jws.setKey(new HmacKey(tokenSecret));
-        jws.setDoKeyValidation(false);
+    public String generateJwtAuthToken(Users u, String subject) {
 
         try {
-            return Collections.singletonMap("token", jws.getCompactSerialization());
+            final JwtClaims claims = new JwtClaims();
+            claims.setSubject(subject);
+            claims.setExpirationTimeMinutesInTheFuture(30);
+            claims.setClaim("user_id", u.getId());
+            claims.setClaim("role", "default");
+            claims.setClaim("firstname", u.getFirstName());
+            claims.setClaim("lastname", u.getLastName());
+            claims.setClaim("email_address", u.getEmailAddress());
+
+            final JsonWebSignature jws = new JsonWebSignature();
+            jws.setPayload(claims.toJson());
+            jws.setAlgorithmHeaderValue(HMAC_SHA256);
+            jws.setKey(new HmacKey(tokenSecret));
+            jws.setDoKeyValidation(false);
+
+            return jws.getCompactSerialization();
+
+        } catch(Exception e) {
+            throw new WebApplicationException("Failed to generate token", Response.Status.BAD_REQUEST);
         }
-        catch (JoseException e) { throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST); }
     }
 
     @GET

@@ -1,6 +1,5 @@
 package com.huzzl.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.jackson.JsonSnakeCase;
@@ -9,7 +8,6 @@ import org.hibernate.validator.constraints.Email;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.security.Principal;
 
 @Entity
 @Table(name="users")
@@ -70,6 +68,11 @@ public class Users extends BaseEntity {
     public Integer status() { return status; }
 
     public String getPassword() { return password; }
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    private UserLogin userlogin;
+
+
 
 
 }

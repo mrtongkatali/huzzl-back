@@ -1,6 +1,7 @@
 package com.huzzl.core;
 
 import io.dropwizard.jackson.JsonSnakeCase;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,8 +13,7 @@ import javax.validation.constraints.NotNull;
                 @NamedQuery( name = "UsersLogin.allUsers", query = "SELECT t FROM UserLogin t"),
                 @NamedQuery( name = "UsersLogin.findById", query = "SELECT t FROM UserLogin t WHERE t.id = :id"),
                 @NamedQuery( name = "UsersLogin.findByEmailAddress",
-                        query = "SELECT a FROM UserLogin a LEFT JOIN " +
-                                "Users b WHERE a.user = b.id AND b.emailAddress = :email"
+                        query = "SELECT a FROM UserLogin a JOIN a.user as b WHERE b.emailAddress = :email"
                 )
         }
 )
@@ -22,7 +22,8 @@ import javax.validation.constraints.NotNull;
 public class UserLogin extends BaseEntity {
 
     @JoinColumn(name="user_id")
-    private Users user;
+    @OneToOne(fetch = FetchType.LAZY)
+    public Users user;
 
     @NotNull
     @Column(name="password_hash", length = 255)
