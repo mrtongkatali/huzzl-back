@@ -12,6 +12,7 @@ import com.huzzl.db.UserLoginDAO;
 import com.huzzl.db.UsersDAO;
 import com.huzzl.resources.AuthResource;
 import com.huzzl.resources.HelloResource;
+import com.huzzl.resources.TaskResource;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -122,6 +123,7 @@ public class MainApplication extends Application<MainConfiguration> {
 
         env.jersey().register(new HelloResource(taskDao));
         env.jersey().register(new AuthResource(usersDao, userLoginDao, config.getJwtTokenSecret()));
+        env.jersey().register(new TaskResource(usersDao, taskDao));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.huzzl.resources;
 
+import com.huzzl.core.AuthUser;
 import com.huzzl.core.PasswordStorage;
 import com.huzzl.core.UserLogin;
 import com.huzzl.core.Users;
@@ -8,6 +9,7 @@ import com.huzzl.db.UsersDAO;
 import com.huzzl.resources.response.AuthResponse;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.apache.commons.lang3.StringUtils;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.keys.HmacKey;
@@ -19,6 +21,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.jose4j.jws.AlgorithmIdentifiers.HMAC_SHA256;
 
@@ -122,7 +126,7 @@ public class AuthResource {
             claims.setSubject(subject);
             claims.setExpirationTimeMinutesInTheFuture(30);
             claims.setClaim("user_id", u.getId());
-            claims.setClaim("role", "default");
+            claims.setClaim("roles", "default");
             claims.setClaim("firstname", u.getFirstName());
             claims.setClaim("lastname", u.getLastName());
             claims.setClaim("email_address", u.getEmailAddress());
@@ -142,7 +146,10 @@ public class AuthResource {
 
     @GET
     @Path("/sample-response-template")
-    public Response getResonseTemplate(@Auth Principal user) {
+    @RolesAllowed("default")
+    public Response getResonseTemplate(@Auth AuthUser user) {
+
+        //System.out.print("User : " + user.getName());
         return Response.ok("ASDADAS").build();
     }
 

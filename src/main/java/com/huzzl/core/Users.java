@@ -72,6 +72,9 @@ public class Users extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private UserLogin userlogin;
 
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    private Task task;
+
 
 
 
