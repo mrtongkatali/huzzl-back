@@ -18,11 +18,11 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import static org.jose4j.jws.AlgorithmIdentifiers.HMAC_SHA256;
 
@@ -79,7 +79,7 @@ public class AuthResource {
                 ).build();
 
             } catch (Exception e) {
-                throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST);
+                throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);
             }
         }
     }
@@ -147,9 +147,14 @@ public class AuthResource {
     @GET
     @Path("/sample-response-template")
     @RolesAllowed("default")
-    public Response getResonseTemplate(@Auth AuthUser user) {
+    public Response getResonseTemplate(@Context SecurityContext context) {
 
-        //System.out.print("User : " + user.getName());
+        AuthUser user = (AuthUser) context.getUserPrincipal();
+
+
+
+
+        System.out.print("User : " + user.getId() + " / "  + user.getName() + " / " + user.getEmailAddress() + " | NIL");
         return Response.ok("ASDADAS").build();
     }
 

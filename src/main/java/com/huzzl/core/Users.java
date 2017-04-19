@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Email;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Table(name="users")
@@ -72,8 +73,8 @@ public class Users extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private UserLogin userlogin;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
-    private Task task;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Task> tasks;
 
 
 

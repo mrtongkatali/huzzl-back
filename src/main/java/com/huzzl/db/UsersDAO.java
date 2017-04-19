@@ -15,7 +15,7 @@ public class UsersDAO extends AbstractDAO<Users> {
     }
 
     public Users findById(Long id) {
-        Users u = uniqueResult(currentSession().getNamedQuery("Users.findById").setParameter("email", id));
+        Users u = uniqueResult(currentSession().getNamedQuery("Users.findById").setParameter("id", id));
         return (u == null ? null : u);
     }
 

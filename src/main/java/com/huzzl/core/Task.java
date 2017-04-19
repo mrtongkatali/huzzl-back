@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 public class Task extends BaseEntity {
 
     @JoinColumn(name="user_id")
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     public Users user;
 
     @NotNull
@@ -34,10 +34,11 @@ public class Task extends BaseEntity {
     private Integer status;
 
     public Task() {}
-    public Task(String taskTitle, String taskDescription, Integer status) {
+    public Task(String taskTitle, String taskDescription, Integer status, Users user) {
         this.taskTitle          = taskTitle;
         this.taskDescription    = taskDescription;
         this.status             = status;
+        this.user               = user;
     }
 
     @JsonProperty
