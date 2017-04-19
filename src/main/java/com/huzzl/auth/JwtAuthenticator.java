@@ -16,12 +16,9 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
 
         try {
 
-            final Long user_id = Long.parseLong(context.getJwtClaims().getClaimValue("user_id").toString());
-
-            //String claim_roles       = context.getJwtClaims().getClaimValue("roles").toString();
-            //final Set<String> roles  = new HashSet<String>(Arrays.asList(StringUtils.join(claim_roles,", ")));
-
-            final Set<String> roles  = new HashSet<String>(Arrays.asList("default"));
+            final Long user_id          = Long.parseLong(context.getJwtClaims().getClaimValue("user_id").toString());
+            final String claim_roles    = context.getJwtClaims().getClaimValue("roles").toString();
+            final Set<String> roles     = new HashSet<String>(Arrays.asList(StringUtils.join(claim_roles, ", ").replaceAll(", $", "")));
 
             return Optional.of(new AuthUser(
                     user_id,
