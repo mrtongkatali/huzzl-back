@@ -41,7 +41,7 @@ dependencies {
 }
 
 run {
-    args 'server', './src/main//config/app.yml'
+    args 'server', './src/main//config/production.yml'
 }
 
 task awesomeFunJar(type: OneJar) {
