@@ -1,6 +1,7 @@
 package com.huzzl;
 
 import com.github.toastshaman.dropwizard.auth.jwt.JwtAuthFilter;
+import com.google.common.base.Charsets;
 import com.huzzl.auth.JwtAuthenticator;
 import com.huzzl.auth.JwtAuthorizer;
 import com.huzzl.core.AuthUser;
@@ -15,6 +16,7 @@ import com.huzzl.resources.HelloResource;
 import com.huzzl.resources.TaskResource;
 import com.huzzl.service.AuthService;
 import com.huzzl.service.TaskService;
+import de.thomaskrille.dropwizard_template_config.TemplateConfigBundle;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -91,6 +93,8 @@ public class MainApplication extends Application<MainConfiguration> {
                 return configuration.getFlywayFactory();
             }
         });
+
+        bootstrap.addBundle(new TemplateConfigBundle());
     }
 
     @Override
@@ -98,6 +102,8 @@ public class MainApplication extends Application<MainConfiguration> {
                     Environment env) throws Exception {
 
         final byte[] key = config.getJwtTokenSecret();
+
+        System.out.println("\n\nASDSADASDADASDAD "+ config.getJwtTokenSecret());
 
         final JwtConsumer consumer = new JwtConsumerBuilder()
                 .setAllowedClockSkewInSeconds(30)

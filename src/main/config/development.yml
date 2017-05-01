@@ -1,7 +1,6 @@
 template: Hello, %s!
 
 defaultName: Stranger
-
 jwtTokenSecret: dfwzsdzwh823zebdwdz772632gdsbd
 
 database:
