@@ -30,16 +30,21 @@ public class Task extends BaseEntity {
     @Column(name="task_description")
     private String taskDescription;
 
+    @Column(name="sort")
+    private Integer sort;
+
     @NotNull
     @Column(name="status")
     private Integer status;
 
     public Task() {}
-    public Task(String taskTitle, String taskDescription, Integer status, Users user) {
+
+    public Task(String taskTitle, String taskDescription, Integer status, Integer sort, Users user) {
         this.taskTitle          = taskTitle;
         this.taskDescription    = taskDescription;
         this.status             = status;
         this.user               = user;
+        this.sort               = sort;
     }
 
     @JsonProperty
@@ -47,6 +52,9 @@ public class Task extends BaseEntity {
 
     @JsonProperty
     public String getTaskDescription() { return taskDescription; }
+
+    @JsonProperty
+    public Integer getSort() { return sort; }
 
     @JsonProperty
     public Integer status() { return status; }

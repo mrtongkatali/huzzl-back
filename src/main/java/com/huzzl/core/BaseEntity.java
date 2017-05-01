@@ -38,6 +38,10 @@ public class BaseEntity implements Serializable  {
     public Date getDateAdded() { return date_added; }
     public Date getLastModified() { return last_modified; }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : -1;

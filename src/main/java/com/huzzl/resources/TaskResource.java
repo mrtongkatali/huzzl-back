@@ -9,7 +9,6 @@ import com.huzzl.service.TaskService;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -35,9 +34,8 @@ public class TaskResource {
     }
 
     @POST
-    @Path("")
     @UnitOfWork
-    @PermitAll
+    @RolesAllowed({"DEFAULT", "ADMIN"})
     public Response createTask(@Context SecurityContext context, @Valid Task task) {
 
         AuthUser auth = (AuthUser) context.getUserPrincipal();
@@ -47,17 +45,23 @@ public class TaskResource {
 
             if(user != null) {
                 Task newTask = taskService.createNewTask(
-                        new Task(task.getTaskTitle(), task.getTaskDescription(), 1, user)
+                        new Task(
+                                task.getTaskTitle(),
+                                task.getTaskDescription(),
+                                1,
+                                task.getSort(),
+                                user
+                        )
                 );
 
-                Map<String, Object> hm = new HashMap();
+                Map<String, Object> data = new HashMap();
 
-                hm.put("task", newTask);
+                data.put("task", newTask);
 
-                return Response.ok(new GenericResponse<Task>(hm, "successful", 200)).build();
+                return Response.ok(new GenericResponse<Task>(data, "successful", 200)).build();
             }
 
-            System.out.println("INTERNAL_ERRROR");
+            System.out.println("INTERNAL_ERROR");
             throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);
 
         } catch (Exception e) {
@@ -66,6 +70,35 @@ public class TaskResource {
         }
     }
 
+    @PUT
+    @Path("/{id}")
+    @UnitOfWork
+    @RolesAllowed({"DEFAULT", "ADMIN"})
+    public Response updateTask(@Context SecurityContext context, @Valid Task task, @PathParam("id") Long id) {
+
+        AuthUser auth = (AuthUser) context.getUserPrincipal();
+
+        try {
+            Task existingTask = taskService.findTaskById(id);
+
+            if(existingTask != null) {
+
+                task.setId(id);
+                taskService.update(task);
+
+                Map<String, Object> data = new HashMap();
+                data.put("task", task);
+
+                return Response.ok(new GenericResponse<Task>(data, "Successful", 200)).build();
+            }
+
+            throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST);
+        }
+    }
 
     @GET
     @Path("/sample-resource-template")

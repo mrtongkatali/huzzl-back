@@ -8,7 +8,6 @@ import com.huzzl.resources.response.AuthResponse;
 import com.huzzl.service.AuthService;
 import io.dropwizard.hibernate.UnitOfWork;
 
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -110,7 +109,7 @@ public class AuthResource {
 
     @GET
     @Path("/sample-response-template")
-    @RolesAllowed("default")
+    @RolesAllowed("DEFAULT")
     public Response getResonseTemplate(@Context SecurityContext context) {
 
         AuthUser user = (AuthUser) context.getUserPrincipal();

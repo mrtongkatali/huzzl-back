@@ -53,7 +53,7 @@ public class AuthService {
         claims.setSubject(subject);
         claims.setExpirationTimeMinutesInTheFuture(30);
         claims.setClaim("user_id", user.getId());
-        claims.setClaim("roles", "default");
+        claims.setClaim("roles", "DEFAULT");
         claims.setClaim("firstname", user.getFirstName());
         claims.setClaim("lastname", user.getLastName());
         claims.setClaim("email_address", user.getEmailAddress());

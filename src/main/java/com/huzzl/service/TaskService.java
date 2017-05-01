@@ -15,4 +15,12 @@ public class TaskService {
         return taskDao.create(task);
     }
 
+    public Task findTaskById(Long id) {
+        Task task = taskDao.findTaskById(id);
+        return (task == null ? null : task);
+    }
+
+    public void update(Task task) {
+        taskDao.update(task);
+    }
 }

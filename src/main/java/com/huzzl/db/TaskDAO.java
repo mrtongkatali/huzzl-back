@@ -21,7 +21,11 @@ public class TaskDAO extends AbstractDAO<Task> {
     }
 
     public Task findTaskById(long id) {
-        Task task = uniqueResult(currentSession().getNamedQuery("Task.findById").setParameter("id", id));
-        return (task == null ? null : task);
+        return uniqueResult(currentSession().getNamedQuery("Task.findById").setParameter("id", id));
     }
+
+    public void update(Task task) {
+        currentSession().merge(task);
+    }
+
 }
