@@ -19,4 +19,3 @@ target/
 .gradle/
 
 build
-src/main/config/app.yml
