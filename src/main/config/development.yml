@@ -9,13 +9,13 @@ database:
   driverClass: org.postgresql.Driver
 
   # the username
-  user: ${DATABASE_USERNAME}
+  user: devuser
 
   # the password
-  password: ${DATABASE_PASSWORD}
+  password: demo123
 
   # the JDBC URL
-  url: ${DATABASE_URL}
+  url: jdbc:postgresql://192.168.1.50/huzzldb
 
   # any properties specific to your JDBC driver:
   properties:
