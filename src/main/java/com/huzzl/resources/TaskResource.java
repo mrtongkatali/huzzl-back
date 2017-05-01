@@ -3,9 +3,9 @@ package com.huzzl.resources;
 import com.huzzl.core.AuthUser;
 import com.huzzl.core.Task;
 import com.huzzl.core.Users;
-import com.huzzl.db.TaskDAO;
-import com.huzzl.db.UsersDAO;
 import com.huzzl.resources.response.GenericResponse;
+import com.huzzl.service.AuthService;
+import com.huzzl.service.TaskService;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -26,12 +26,12 @@ import java.util.Map;
 @Consumes(MediaType.APPLICATION_JSON)
 public class TaskResource {
 
-    private final UsersDAO usersDao;
-    private final TaskDAO taskDao;
+    private AuthService authService;
+    private TaskService taskService;
 
-    public TaskResource(UsersDAO usersDao, TaskDAO taskDao) {
-        this.usersDao = usersDao;
-        this.taskDao = taskDao;
+    public TaskResource(AuthService authService, TaskService taskService) {
+        this.authService    = authService;
+        this.taskService    = taskService;
     }
 
     @POST
@@ -43,17 +43,18 @@ public class TaskResource {
         AuthUser auth = (AuthUser) context.getUserPrincipal();
 
         try {
-            Users user = usersDao.findById(auth.getId());
+            Users user = authService.findUserById(auth.getId());
+
             if(user != null) {
-                Task newTask = (Task) taskDao.create(new Task(task.getTaskTitle(), task.getTaskDescription(), 1, user));
+                Task newTask = taskService.createNewTask(
+                        new Task(task.getTaskTitle(), task.getTaskDescription(), 1, user)
+                );
 
                 Map<String, Object> hm = new HashMap();
 
-                hm.put("test", newTask);
-                hm.put("test2", newTask);
-                hm.put("test3", newTask);
+                hm.put("task", newTask);
 
-                return Response.ok(new GenericResponse<Task>(hm)).build();
+                return Response.ok(new GenericResponse<Task>(hm, "successful", 200)).build();
             }
 
             System.out.println("INTERNAL_ERRROR");
@@ -64,10 +65,6 @@ public class TaskResource {
             throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST);
         }
     }
-
-
-
-
 
 
     @GET

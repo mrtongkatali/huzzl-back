@@ -1,5 +1,6 @@
 package com.huzzl.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.jackson.JsonSnakeCase;
 
@@ -49,4 +50,7 @@ public class Task extends BaseEntity {
 
     @JsonProperty
     public Integer status() { return status; }
+
+    @JsonIgnore
+    public Users getUser() { return user; }
 }

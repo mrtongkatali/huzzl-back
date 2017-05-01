@@ -4,15 +4,9 @@ import com.huzzl.core.AuthUser;
 import com.huzzl.core.PasswordStorage;
 import com.huzzl.core.UserLogin;
 import com.huzzl.core.Users;
-import com.huzzl.db.UserLoginDAO;
-import com.huzzl.db.UsersDAO;
 import com.huzzl.resources.response.AuthResponse;
-import io.dropwizard.auth.Auth;
+import com.huzzl.service.AuthService;
 import io.dropwizard.hibernate.UnitOfWork;
-import org.apache.commons.lang3.StringUtils;
-import org.jose4j.jws.JsonWebSignature;
-import org.jose4j.jwt.JwtClaims;
-import org.jose4j.keys.HmacKey;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -22,23 +16,17 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.security.Principal;
 
-import static org.jose4j.jws.AlgorithmIdentifiers.HMAC_SHA256;
 
 @Path("/1.0/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthResource {
 
-    private final UsersDAO usersDao;
-    private final UserLoginDAO userLoginDao;
-    private final byte[] tokenSecret;
+    private AuthService authService;
 
-    public AuthResource(UsersDAO usersDao, UserLoginDAO userLoginDao, byte[] tokenSecret) {
-        this.usersDao       = usersDao;
-        this.userLoginDao   = userLoginDao;
-        this.tokenSecret    = tokenSecret;
+    public AuthResource(AuthService authService) {
+        this.authService = authService;
     }
 
     @POST
@@ -49,7 +37,7 @@ public class AuthResource {
         /**
          *  Check whether the email already exists in the database
          */
-        Users oldUser = usersDao.findUserByEmailAddress(u.getEmailAddress());
+        Users oldUser = authService.findUserByEmailAddress(u.getEmailAddress());
 
         if(oldUser != null) {
             throw new WebApplicationException("Email address already exists", Response.Status.BAD_REQUEST);
@@ -58,17 +46,17 @@ public class AuthResource {
             /**
              * Create new user
              */
-            Users newUser = usersDao.create(u);
+            Users newUser = authService.createNewUser(u);
 
             try {
 
-                userLoginDao.create(new UserLogin( u.getPassword(), newUser ));
+                authService.createNewCredentials(u.getPassword(), newUser);
 
                 /**
                  * Generate jwt token and add it to response container
                  */
 
-                String token = generateJwtAuthToken(newUser, "loggedUser");
+                String token = authService.generateJwtToken(newUser, "loggedUser");
 
                 return Response.ok(
                         new AuthResponse<Users>(
@@ -92,7 +80,7 @@ public class AuthResource {
 
         try {
 
-            UserLogin login = userLoginDao.findUserByEmailAddress(username);
+            UserLogin login = authService.findUserLoginByEmailAddress(username);
 
             if(login != null) {
 
@@ -100,7 +88,7 @@ public class AuthResource {
 
                 if(pass.verifyPassword(password, login.getPasswordHash()) == true) {
 
-                    String token = generateJwtAuthToken(login.user, "loggedUser");
+                    String token = authService.generateJwtToken(login.user, "loggedUser");
 
                     return Response.ok(new AuthResponse<Users>(
                        login.user,
@@ -119,30 +107,6 @@ public class AuthResource {
 
     }
 
-    public String generateJwtAuthToken(Users u, String subject) {
-
-        try {
-            final JwtClaims claims = new JwtClaims();
-            claims.setSubject(subject);
-            claims.setExpirationTimeMinutesInTheFuture(30);
-            claims.setClaim("user_id", u.getId());
-            claims.setClaim("roles", "default");
-            claims.setClaim("firstname", u.getFirstName());
-            claims.setClaim("lastname", u.getLastName());
-            claims.setClaim("email_address", u.getEmailAddress());
-
-            final JsonWebSignature jws = new JsonWebSignature();
-            jws.setPayload(claims.toJson());
-            jws.setAlgorithmHeaderValue(HMAC_SHA256);
-            jws.setKey(new HmacKey(tokenSecret));
-            jws.setDoKeyValidation(false);
-
-            return jws.getCompactSerialization();
-
-        } catch(Exception e) {
-            throw new WebApplicationException("Failed to generate token", Response.Status.BAD_REQUEST);
-        }
-    }
 
     @GET
     @Path("/sample-response-template")
@@ -150,9 +114,6 @@ public class AuthResource {
     public Response getResonseTemplate(@Context SecurityContext context) {
 
         AuthUser user = (AuthUser) context.getUserPrincipal();
-
-
-
 
         System.out.print("User : " + user.getId() + " / "  + user.getName() + " / " + user.getEmailAddress() + " | NIL");
         return Response.ok("ASDADAS").build();

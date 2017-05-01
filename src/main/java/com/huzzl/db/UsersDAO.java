@@ -15,12 +15,10 @@ public class UsersDAO extends AbstractDAO<Users> {
     }
 
     public Users findById(Long id) {
-        Users u = uniqueResult(currentSession().getNamedQuery("Users.findById").setParameter("id", id));
-        return (u == null ? null : u);
+        return uniqueResult(currentSession().getNamedQuery("Users.findById").setParameter("id", id));
     }
 
     public Users findUserByEmailAddress(String email) {
-        Users u = uniqueResult(currentSession().getNamedQuery("Users.findByEmail").setParameter("email", email));
-        return (u == null ? null : u);
+        return uniqueResult(currentSession().getNamedQuery("Users.findByEmail").setParameter("email", email));
     }
 }

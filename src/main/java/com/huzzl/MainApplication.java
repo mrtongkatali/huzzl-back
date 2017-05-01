@@ -13,6 +13,8 @@ import com.huzzl.db.UsersDAO;
 import com.huzzl.resources.AuthResource;
 import com.huzzl.resources.HelloResource;
 import com.huzzl.resources.TaskResource;
+import com.huzzl.service.AuthService;
+import com.huzzl.service.TaskService;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -41,6 +43,11 @@ public class MainApplication extends Application<MainConfiguration> {
     private TaskDAO taskDao;
     private UsersDAO usersDao;
     private UserLoginDAO userLoginDao;
+
+
+    // Services
+    private AuthService authService;
+    private TaskService taskService;
 
     @Override
     public String getName() {
@@ -105,9 +112,14 @@ public class MainApplication extends Application<MainConfiguration> {
 
         this.sessionFactory = hibernateBundle.getSessionFactory();
 
+        // DAOs
         this.taskDao        = new TaskDAO(sessionFactory);
         this.usersDao       = new UsersDAO(sessionFactory);
         this.userLoginDao   = new UserLoginDAO(sessionFactory);
+
+        // Services
+        this.authService    = new AuthService(userLoginDao, usersDao, config.getJwtTokenSecret());
+        this.taskService    = new TaskService(taskDao);
 
         env.jersey().register(new AuthDynamicFeature(
                 new JwtAuthFilter.Builder<AuthUser>()
@@ -122,8 +134,8 @@ public class MainApplication extends Application<MainConfiguration> {
         env.jersey().register(RolesAllowedDynamicFeature.class);
 
         env.jersey().register(new HelloResource(taskDao));
-        env.jersey().register(new AuthResource(usersDao, userLoginDao, config.getJwtTokenSecret()));
-        env.jersey().register(new TaskResource(usersDao, taskDao));
+        env.jersey().register(new AuthResource(authService));
+        env.jersey().register(new TaskResource(authService, taskService));
     }
 
 }

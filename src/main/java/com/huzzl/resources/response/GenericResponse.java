@@ -10,9 +10,13 @@ public class GenericResponse<T> {
     private String message;
     private Integer code;
 
-    public GenericResponse(Map<String, Object> map) {
-        this.data = map;
+    public GenericResponse(Map<String, Object> map, String message, Integer code) {
+        this.data       = map;
+        this.message    = message;
+        this.code       = code;
     }
 
     public Map<String, Object> getData() { return data; }
+    public String getMessage() { return message; }
+    public Integer getCode() { return code; }
 }
