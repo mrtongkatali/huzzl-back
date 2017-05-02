@@ -5,9 +5,10 @@ defaultName: Stranger
 jwtTokenSecret: ${JWT_TOKEN_SECRET}
 
 server:
+  registerDefaultExceptionMappers: false
   applicationConnectors:
       - type: http
-        port: 8080
+        port: ${PORT}
 
 database:
   # the name of your JDBC driver
