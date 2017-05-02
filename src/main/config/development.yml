@@ -1,20 +1,25 @@
 template: Hello, %s!
 
 defaultName: Stranger
-jwtTokenSecret: dfwzsdzwh823zebdwdz772632gdsbd
+jwtTokenSecret: ${JWT_TOKEN_SECRET}
+
+server:
+  applicationConnectors:
+      - type: http
+        port: 8089
 
 database:
   # the name of your JDBC driver
   driverClass: org.postgresql.Driver
 
   # the username
-  user: devuser
+  user: ${JDBC_DATABASE_USERNAME}
 
   # the password
-  password: demo123
+  password: ${JDBC_DATABASE_PASSWORD}
 
   # the JDBC URL
-  url: jdbc:postgresql://192.168.1.50/huzzldb
+  url: jdbc:postgresql://${JDBC_DATABASE_URL}
 
   # any properties specific to your JDBC driver:
   properties:
