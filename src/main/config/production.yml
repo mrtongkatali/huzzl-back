@@ -2,7 +2,12 @@ template: Hello, %s!
 
 defaultName: Stranger
 
-jwtTokenSecret: dfwzsdzwh823zebdwdz772632gdsbd
+jwtTokenSecret: ${JWT_TOKEN_SECRET}
+
+server:
+  applicationConnectors:
+      - type: http
+        port: 8089
 
 database:
   # the name of your JDBC driver
