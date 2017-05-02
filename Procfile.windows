@@ -1,1 +1,0 @@
-web: java -jar .\build\libs\huzzl-back-1.0.1-SNAPSHOT.jar server .\src\main\config\development.yml

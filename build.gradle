@@ -49,21 +49,10 @@ task awesomeFunJar(type: OneJar) {
     mainClass = mainClassName
 }
 
-task dbmigrator(type: OneJar) {
-    mainClass = "com.huzzl.cli.Migrator"
-    archiveName = 'migrator.jar'
-}
-
 artifacts {
     archives awesomeFunJar
-    archives dbmigrator
 }
 
 task stage {
     dependsOn installDist
 }
-
-
-task stage2(dependsOn: ['build', 'clean'])
-
-build.mustRunAfter clean
