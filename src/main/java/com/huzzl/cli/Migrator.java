@@ -10,7 +10,7 @@ public class Migrator {
 
         if(System.getenv("envi") == "prod") {
             Flyway flyway = new Flyway();
-            flyway.setDataSource(System.getenv("JDBC_DATABASE_URL"),
+            flyway.setDataSource("jdbc:postgresql://" + System.getenv("JDBC_DATABASE_URL"),
                     System.getenv("JDBC_DATABASE_USERNAME"),
                     System.getenv("JDBC_DATABASE_PASSWORD"));
             flyway.migrate();
