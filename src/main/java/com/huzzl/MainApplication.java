@@ -1,7 +1,6 @@
 package com.huzzl;
 
 import com.github.toastshaman.dropwizard.auth.jwt.JwtAuthFilter;
-import com.google.common.base.Charsets;
 import com.huzzl.auth.JwtAuthenticator;
 import com.huzzl.auth.JwtAuthorizer;
 import com.huzzl.core.AuthUser;

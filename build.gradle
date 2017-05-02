@@ -53,6 +53,5 @@ artifacts {
     archives awesomeFunJar
 }
 
-//task stage(dependsOn: ['clean', 'installDist'])
 task stage(dependsOn: ['build', 'clean'])
 build.mustRunAfter clean
