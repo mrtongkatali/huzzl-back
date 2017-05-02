@@ -1,1 +1,2 @@
 web: java $JAVA_OPTS -Ddw.server.applicationConnectors[0].port='$PORT' -jar build/libs/huzzl-back-1.0.1-SNAPSHOT-standalone.jar server ./src/main/config/production.yml
+migrate: java $JAVA_OPTS -jar build/libs/migrator.jar

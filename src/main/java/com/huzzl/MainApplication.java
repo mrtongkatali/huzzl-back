@@ -102,8 +102,6 @@ public class MainApplication extends Application<MainConfiguration> {
 
         final byte[] key = config.getJwtTokenSecret();
 
-        System.out.println("\n\nASDSADASDADASDAD "+ config.getJwtTokenSecret());
-
         final JwtConsumer consumer = new JwtConsumerBuilder()
                 .setAllowedClockSkewInSeconds(30)
                 .setRequireExpirationTime()

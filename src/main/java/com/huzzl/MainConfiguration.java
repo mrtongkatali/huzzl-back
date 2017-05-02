@@ -10,7 +10,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.UnsupportedEncodingException;
 
-
 public class MainConfiguration extends Configuration {
 
     @NotEmpty
