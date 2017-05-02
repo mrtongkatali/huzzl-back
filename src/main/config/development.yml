@@ -6,7 +6,7 @@ jwtTokenSecret: ${JWT_TOKEN_SECRET}
 server:
   applicationConnectors:
       - type: http
-        port: 8089
+        port: 8080
 
 database:
   # the name of your JDBC driver
