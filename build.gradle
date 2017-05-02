@@ -59,5 +59,11 @@ artifacts {
     archives dbmigrator
 }
 
-task stage(dependsOn: ['build', 'clean'])
+task stage {
+    dependsOn installDist
+}
+
+
+task stage2(dependsOn: ['build', 'clean'])
+
 build.mustRunAfter clean
