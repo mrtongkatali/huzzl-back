@@ -33,8 +33,6 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.keys.HmacKey;
 
 import java.security.Principal;
-import java.util.Optional;
-
 
 public class MainApplication extends Application<MainConfiguration> {
 
