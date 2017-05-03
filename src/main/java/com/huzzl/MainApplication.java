@@ -134,7 +134,7 @@ public class MainApplication extends Application<MainConfiguration> {
         env.jersey().register(new AuthValueFactoryProvider.Binder<>(Principal.class));
         env.jersey().register(RolesAllowedDynamicFeature.class);
 
-        env.jersey().register(new HelloResource(taskDao));
+        env.jersey().register(new HelloResource());
         env.jersey().register(new AuthResource(authService));
         env.jersey().register(new TaskResource(authService, taskService));
     }
