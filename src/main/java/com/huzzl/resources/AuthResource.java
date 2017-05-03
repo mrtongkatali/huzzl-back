@@ -110,7 +110,7 @@ public class AuthResource {
     @GET
     @Path("/sample-response-template")
     @RolesAllowed("DEFAULT")
-    public Response getResonseTemplate(@Context SecurityContext context) {
+    public Response getResponseTemplate(@Context SecurityContext context) {
 
         AuthUser user = (AuthUser) context.getUserPrincipal();
 

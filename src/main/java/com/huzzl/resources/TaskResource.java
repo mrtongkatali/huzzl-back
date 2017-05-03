@@ -61,7 +61,6 @@ public class TaskResource {
                 return Response.ok(new GenericResponse<Task>(data, "successful", 200)).build();
             }
 
-            System.out.println("INTERNAL_ERROR");
             throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);
 
         } catch (Exception e) {
@@ -98,11 +97,5 @@ public class TaskResource {
             System.out.println(e.getMessage());
             throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST);
         }
-    }
-
-    @GET
-    @Path("/sample-resource-template")
-    public Response getResonseTemplate(@Auth Principal user) {
-        return Response.ok("ASDADAS").build();
     }
 }
