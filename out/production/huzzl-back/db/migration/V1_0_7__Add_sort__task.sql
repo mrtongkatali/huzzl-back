@@ -1,2 +1,0 @@
-ALTER TABLE task
-ADD sort INT
