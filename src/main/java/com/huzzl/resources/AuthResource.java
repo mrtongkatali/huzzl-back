@@ -42,12 +42,12 @@ public class AuthResource {
             throw new WebApplicationException("Email address already exists", Response.Status.BAD_REQUEST);
         } else {
 
-            /**
-             * Create new user
-             */
-            Users newUser = authService.createNewUser(u);
-
             try {
+
+                /**
+                 * Create new user
+                 */
+                Users newUser = authService.createNewUser(u);
 
                 authService.createNewCredentials(u.getPassword(), newUser);
 
