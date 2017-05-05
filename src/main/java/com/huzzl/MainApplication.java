@@ -26,13 +26,17 @@ import io.dropwizard.flyway.FlywayBundle;
 import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.hibernate.SessionFactory;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.keys.HmacKey;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import java.security.Principal;
+import java.util.EnumSet;
 
 public class MainApplication extends Application<MainConfiguration> {
 
@@ -98,6 +102,7 @@ public class MainApplication extends Application<MainConfiguration> {
     public void run(MainConfiguration config,
                     Environment env) throws Exception {
 
+        // Configure JWT
         final byte[] key = config.getJwtTokenSecret();
 
         final JwtConsumer consumer = new JwtConsumerBuilder()
@@ -121,6 +126,17 @@ public class MainApplication extends Application<MainConfiguration> {
         // Services
         this.authService    = new AuthService(userLoginDao, usersDao, config.getJwtTokenSecret());
         this.taskService    = new TaskService(taskDao);
+
+        // Enable CORS
+        final FilterRegistration.Dynamic cors =
+                env.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+        cors.setInitParameter("allowedOrigins", "*");
+        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+
+        // Add URL Mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         env.jersey().register(new AuthDynamicFeature(
                 new JwtAuthFilter.Builder<AuthUser>()
