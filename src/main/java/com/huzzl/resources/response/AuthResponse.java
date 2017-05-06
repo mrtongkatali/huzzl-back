@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class AuthResponse<T> {
 
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> result = new HashMap<>();
     private String message;
     private Integer code;
 
@@ -13,11 +13,11 @@ public class AuthResponse<T> {
         this.message = message;
         this.code    = code;
 
-        data.put("user", user);
-        data.put("token", token);
+        result.put("user", user);
+        result.put("token", token);
     }
 
-    public Map<String, Object> getData() { return data; }
+    public Map<String, Object> getResult() { return result; }
     public String getMessage() { return message; }
     public Integer getCode() { return code; }
 }
