@@ -22,9 +22,9 @@ public class HelloResource {
     @Timed
     public Response getResponse(@PathParam("name") String name) {
 
-        Map<String, Object> data = new HashMap();
+        Map<String, Object> result = new HashMap();
 
-        return Response.ok(new GenericResponse<>(data, "API Server is working.", 200)).build();
+        return Response.ok(new GenericResponse<>(result, "API Server is working.", 200)).build();
 
     }
 
