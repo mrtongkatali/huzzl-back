@@ -58,13 +58,12 @@ public class TaskResource {
 
                 data.put("task", newTask);
 
-                return Response.ok(new GenericResponse<Task>(data, "successful", 200)).build();
+                return Response.ok(new GenericResponse<Task>(data, "successful", 200, true)).build();
             }
 
             throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST);
         }
     }
@@ -88,7 +87,7 @@ public class TaskResource {
                 Map<String, Object> data = new HashMap();
                 data.put("task", task);
 
-                return Response.ok(new GenericResponse<Task>(data, "Successful", 200)).build();
+                return Response.ok(new GenericResponse<Task>(data, "Successful", 200, true)).build();
             }
 
             throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);

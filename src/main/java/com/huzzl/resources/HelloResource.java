@@ -24,7 +24,7 @@ public class HelloResource {
 
         Map<String, Object> result = new HashMap();
 
-        return Response.ok(new GenericResponse<>(result, "API Server is working.", 200)).build();
+        return Response.ok(new GenericResponse<>(result, "API Server is working.", 200, true)).build();
 
     }
 

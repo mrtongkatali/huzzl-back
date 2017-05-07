@@ -5,6 +5,7 @@ import com.huzzl.core.PasswordStorage;
 import com.huzzl.core.UserLogin;
 import com.huzzl.core.Users;
 import com.huzzl.resources.response.AuthResponse;
+import com.huzzl.resources.response.GenericResponse;
 import com.huzzl.service.AuthService;
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -15,6 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Path("/1.0/auth")
@@ -23,6 +26,7 @@ import javax.ws.rs.core.SecurityContext;
 public class AuthResource {
 
     private AuthService authService;
+    private Map<String, Object> data;
 
     public AuthResource(AuthService authService) {
         this.authService = authService;
@@ -36,10 +40,15 @@ public class AuthResource {
         /**
          *  Check whether the email already exists in the database
          */
+
+        data = new HashMap();
+
+        String errorMessage = "INTERNAL_ERROR";
+
         Users oldUser = authService.findUserByEmailAddress(u.getEmailAddress());
 
         if(oldUser != null) {
-            throw new WebApplicationException("Email address already exists", Response.Status.BAD_REQUEST);
+            errorMessage = "Email address is already been used.";
         } else {
 
             try {
@@ -66,9 +75,11 @@ public class AuthResource {
                 ).build();
 
             } catch (Exception e) {
-                throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);
+                // LOG EXCEPTION HERE
             }
         }
+
+        return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
     }
 
     @POST
@@ -76,6 +87,8 @@ public class AuthResource {
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response login(@FormParam("username") String username, @FormParam("password") String password) {
+
+        data = new HashMap();
 
         try {
 
@@ -98,11 +111,11 @@ public class AuthResource {
                 }
             }
 
-            throw new WebApplicationException("Invalid credentials.", Response.Status.BAD_REQUEST);
-
         } catch (Exception e) {
-            throw new WebApplicationException("Invalid credentials.", Response.Status.BAD_REQUEST);
+            // LOG EXCEPTION HERE
         }
+
+        return Response.ok(new GenericResponse<>(data, "Invalid Credentials", 200, false)).build();
 
     }
 
