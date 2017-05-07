@@ -71,7 +71,9 @@ public class AuthResource {
                                 newUser,
                                 "Registration successful!",
                                 token,
-                                Response.Status.OK.getStatusCode())
+                                Response.Status.OK.getStatusCode(),
+                                true
+                        )
                 ).build();
 
             } catch (Exception e) {
@@ -107,7 +109,8 @@ public class AuthResource {
                        login.user,
                        "Authentication successful",
                        token,
-                       Response.Status.OK.getStatusCode()
+                       Response.Status.OK.getStatusCode(),
+                       true
                     )).build();
                 }
             }
