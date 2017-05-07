@@ -28,6 +28,9 @@ public class TaskResource {
     private AuthService authService;
     private TaskService taskService;
 
+    private Map<String, Object> data;
+    private String errorMessage = "";
+
     public TaskResource(AuthService authService, TaskService taskService) {
         this.authService    = authService;
         this.taskService    = taskService;
@@ -37,6 +40,8 @@ public class TaskResource {
     @UnitOfWork
     @RolesAllowed({"DEFAULT", "ADMIN"})
     public Response createTask(@Context SecurityContext context, @Valid Task task) {
+
+        data = new HashMap();
 
         AuthUser auth = (AuthUser) context.getUserPrincipal();
 
@@ -54,18 +59,19 @@ public class TaskResource {
                         )
                 );
 
-                Map<String, Object> data = new HashMap();
-
                 data.put("task", newTask);
 
                 return Response.ok(new GenericResponse<Task>(data, "successful", 200, true)).build();
+            } else {
+                errorMessage = "User does not exists. Task has not been saved.";
             }
 
-            throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);
-
         } catch (Exception e) {
-            throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST);
+            // LOG EXCEPTION HERE
+            errorMessage = "INTERNAL_ERROR";
         }
+
+        return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
     }
 
     @PUT
@@ -73,6 +79,8 @@ public class TaskResource {
     @UnitOfWork
     @RolesAllowed({"DEFAULT", "ADMIN"})
     public Response updateTask(@Context SecurityContext context, @Valid Task task, @PathParam("id") Long id) {
+
+        data = new HashMap();
 
         AuthUser auth = (AuthUser) context.getUserPrincipal();
 
@@ -84,17 +92,18 @@ public class TaskResource {
                 task.setId(id);
                 taskService.update(task);
 
-                Map<String, Object> data = new HashMap();
                 data.put("task", task);
 
                 return Response.ok(new GenericResponse<Task>(data, "Successful", 200, true)).build();
+            } else {
+                errorMessage = "Task does not exists. Task update failed.";
             }
 
-            throw new WebApplicationException("INTERNAL_ERROR", Response.Status.BAD_REQUEST);
-
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new WebApplicationException(e.getCause(), Response.Status.BAD_REQUEST);
+            // LOG EXCEPTION HERE
+            errorMessage = "INTERNAL_ERROR";
         }
+
+        return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
     }
 }

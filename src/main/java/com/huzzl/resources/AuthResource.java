@@ -26,7 +26,9 @@ import java.util.Map;
 public class AuthResource {
 
     private AuthService authService;
+
     private Map<String, Object> data;
+    private String errorMessage = "";
 
     public AuthResource(AuthService authService) {
         this.authService = authService;
@@ -42,8 +44,6 @@ public class AuthResource {
          */
 
         data = new HashMap();
-
-        String errorMessage = "INTERNAL_ERROR";
 
         Users oldUser = authService.findUserByEmailAddress(u.getEmailAddress());
 
@@ -76,6 +76,7 @@ public class AuthResource {
 
             } catch (Exception e) {
                 // LOG EXCEPTION HERE
+                errorMessage = "INTERNAL_ERROR";
             }
         }
 
@@ -111,11 +112,14 @@ public class AuthResource {
                 }
             }
 
+            errorMessage = "Invalid credentials. Login failed.";
+
         } catch (Exception e) {
             // LOG EXCEPTION HERE
+            errorMessage = "INTERNAL_ERROR";
         }
 
-        return Response.ok(new GenericResponse<>(data, "Invalid Credentials", 200, false)).build();
+        return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
 
     }
 
