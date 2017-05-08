@@ -3,10 +3,8 @@ package com.huzzl;
 import com.github.toastshaman.dropwizard.auth.jwt.JwtAuthFilter;
 import com.huzzl.auth.JwtAuthenticator;
 import com.huzzl.auth.JwtAuthorizer;
-import com.huzzl.core.AuthUser;
-import com.huzzl.core.Task;
-import com.huzzl.core.UserLogin;
-import com.huzzl.core.Users;
+import com.huzzl.core.*;
+import com.huzzl.db.JwtAccessTokenDAO;
 import com.huzzl.db.TaskDAO;
 import com.huzzl.db.UserLoginDAO;
 import com.huzzl.db.UsersDAO;
@@ -46,6 +44,7 @@ public class MainApplication extends Application<MainConfiguration> {
     private TaskDAO taskDao;
     private UsersDAO usersDao;
     private UserLoginDAO userLoginDao;
+    private JwtAccessTokenDAO jwtAccessTokenDao;
 
 
     // Services
@@ -61,7 +60,8 @@ public class MainApplication extends Application<MainConfiguration> {
         return new HibernateBundle<MainConfiguration>(
                 Task.class,
                 Users.class,
-                UserLogin.class
+                UserLogin.class,
+                JwtAccessToken.class
         ) {
 
             @Override
@@ -119,12 +119,13 @@ public class MainApplication extends Application<MainConfiguration> {
         this.sessionFactory = hibernateBundle.getSessionFactory();
 
         // DAOs
-        this.taskDao        = new TaskDAO(sessionFactory);
-        this.usersDao       = new UsersDAO(sessionFactory);
-        this.userLoginDao   = new UserLoginDAO(sessionFactory);
+        this.taskDao            = new TaskDAO(sessionFactory);
+        this.usersDao           = new UsersDAO(sessionFactory);
+        this.userLoginDao       = new UserLoginDAO(sessionFactory);
+        this.jwtAccessTokenDao  = new JwtAccessTokenDAO(sessionFactory);
 
         // Services
-        this.authService    = new AuthService(userLoginDao, usersDao, config.getJwtTokenSecret());
+        this.authService    = new AuthService(userLoginDao, usersDao, jwtAccessTokenDao, config.getJwtTokenSecret());
         this.taskService    = new TaskService(taskDao);
 
         // Enable CORS

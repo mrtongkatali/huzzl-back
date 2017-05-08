@@ -70,6 +70,13 @@ public class Users extends BaseEntity {
 
     public String getPassword() { return password; }
 
+    /**
+     * Set the pasword to null so that it will not show on the response
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private UserLogin userlogin;
 

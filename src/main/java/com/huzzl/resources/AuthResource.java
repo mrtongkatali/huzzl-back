@@ -1,9 +1,6 @@
 package com.huzzl.resources;
 
-import com.huzzl.core.AuthUser;
-import com.huzzl.core.PasswordStorage;
-import com.huzzl.core.UserLogin;
-import com.huzzl.core.Users;
+import com.huzzl.core.*;
 import com.huzzl.resources.response.AuthResponse;
 import com.huzzl.resources.response.GenericResponse;
 import com.huzzl.service.AuthService;
@@ -16,6 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +52,7 @@ public class AuthResource {
             try {
 
                 /**
-                 * Create new user
+                 * Create new user instance
                  */
                 Users newUser = authService.createNewUser(u);
 
@@ -62,14 +60,20 @@ public class AuthResource {
 
                 /**
                  * Generate jwt token and add it to response container
+                 * then saved generated access token to database for reference
                  */
 
                 String token = authService.generateJwtToken(newUser, "loggedUser");
+                Date expires = authService.getJwtExpiration();
+
+                authService.saveAccessToken(token, expires, newUser);
+
+                newUser.setPassword(null);
 
                 return Response.ok(
                         new AuthResponse<Users>(
                                 newUser,
-                                "Registration successful!",
+                                "User has been successfully created.",
                                 token,
                                 Response.Status.OK.getStatusCode(),
                                 true
@@ -103,7 +107,15 @@ public class AuthResource {
 
                 if(pass.verifyPassword(password, login.getPasswordHash()) == true) {
 
+                    /**
+                     * Generate jwt token and add it to response container
+                     * then saved generated access token to database for reference
+                     */
+
                     String token = authService.generateJwtToken(login.user, "loggedUser");
+                    Date expires = authService.getJwtExpiration();
+
+                    authService.saveAccessToken(token, expires, login.user);
 
                     return Response.ok(new AuthResponse<Users>(
                        login.user,
@@ -123,7 +135,6 @@ public class AuthResource {
         }
 
         return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
-
     }
 
 
