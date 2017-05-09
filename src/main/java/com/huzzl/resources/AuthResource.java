@@ -5,6 +5,7 @@ import com.huzzl.resources.response.AuthResponse;
 import com.huzzl.resources.response.GenericResponse;
 import com.huzzl.service.AuthService;
 import io.dropwizard.hibernate.UnitOfWork;
+import redis.clients.jedis.Jedis;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
@@ -35,7 +36,7 @@ public class AuthResource {
     @POST
     @Path("/register")
     @UnitOfWork
-    public Response registerUser(@Valid Users u) {
+    public Response registerUser(@Valid Users u, @Context Jedis jedis) {
 
         /**
          *  Check whether the email already exists in the database
@@ -60,13 +61,13 @@ public class AuthResource {
 
                 /**
                  * Generate jwt token and add it to response container
-                 * then saved generated access token to database for reference
+                 * then saved generated access token to redis
                  */
 
                 String token = authService.generateJwtToken(newUser, "loggedUser");
-                Date expires = authService.getJwtExpiration();
+                Long expires = authService.getJwtExpiration();
 
-                authService.saveAccessToken(token, expires, newUser);
+                jedis.setex("tkn-" + newUser.getId()+"-"+expires, 3600, "1");
 
                 newUser.setPassword(null);
 
@@ -93,7 +94,7 @@ public class AuthResource {
     @Path("/login")
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response login(@FormParam("username") String username, @FormParam("password") String password) {
+    public Response login(@FormParam("username") String username, @FormParam("password") String password, @Context Jedis jedis) {
 
         data = new HashMap();
 
@@ -109,13 +110,13 @@ public class AuthResource {
 
                     /**
                      * Generate jwt token and add it to response container
-                     * then saved generated access token to database for reference
+                     * then saved generated access token to redis
                      */
 
                     String token = authService.generateJwtToken(login.user, "loggedUser");
-                    Date expires = authService.getJwtExpiration();
+                    Long expires = authService.getJwtExpiration();
 
-                    authService.saveAccessToken(token, expires, login.user);
+                    jedis.setex("tkn-" + login.user.getId() + "-" + expires, 3600, "1");
 
                     return Response.ok(new AuthResponse<Users>(
                        login.user,

@@ -1,10 +1,11 @@
 package com.huzzl;
 
+import com.bendb.dropwizard.redis.JedisBundle;
+import com.bendb.dropwizard.redis.JedisFactory;
 import com.github.toastshaman.dropwizard.auth.jwt.JwtAuthFilter;
 import com.huzzl.auth.JwtAuthenticator;
 import com.huzzl.auth.JwtAuthorizer;
 import com.huzzl.core.*;
-import com.huzzl.db.JwtAccessTokenDAO;
 import com.huzzl.db.TaskDAO;
 import com.huzzl.db.UserLoginDAO;
 import com.huzzl.db.UsersDAO;
@@ -44,8 +45,6 @@ public class MainApplication extends Application<MainConfiguration> {
     private TaskDAO taskDao;
     private UsersDAO usersDao;
     private UserLoginDAO userLoginDao;
-    private JwtAccessTokenDAO jwtAccessTokenDao;
-
 
     // Services
     private AuthService authService;
@@ -60,8 +59,7 @@ public class MainApplication extends Application<MainConfiguration> {
         return new HibernateBundle<MainConfiguration>(
                 Task.class,
                 Users.class,
-                UserLogin.class,
-                JwtAccessToken.class
+                UserLogin.class
         ) {
 
             @Override
@@ -95,6 +93,13 @@ public class MainApplication extends Application<MainConfiguration> {
             }
         });
 
+        bootstrap.addBundle(new JedisBundle<MainConfiguration>() {
+            @Override
+            public JedisFactory getJedisFactory(MainConfiguration configuration) {
+                return configuration.getJedisFactory();
+            }
+        });
+
         bootstrap.addBundle(new TemplateConfigBundle());
     }
 
@@ -122,10 +127,9 @@ public class MainApplication extends Application<MainConfiguration> {
         this.taskDao            = new TaskDAO(sessionFactory);
         this.usersDao           = new UsersDAO(sessionFactory);
         this.userLoginDao       = new UserLoginDAO(sessionFactory);
-        this.jwtAccessTokenDao  = new JwtAccessTokenDAO(sessionFactory);
 
         // Services
-        this.authService    = new AuthService(userLoginDao, usersDao, jwtAccessTokenDao, config.getJwtTokenSecret());
+        this.authService    = new AuthService(userLoginDao, usersDao, config.getJwtTokenSecret());
         this.taskService    = new TaskService(taskDao);
 
         // Enable CORS

@@ -1,16 +1,12 @@
 package com.huzzl.service;
 
-import com.huzzl.core.JwtAccessToken;
 import com.huzzl.core.UserLogin;
 import com.huzzl.core.Users;
-import com.huzzl.db.JwtAccessTokenDAO;
 import com.huzzl.db.UserLoginDAO;
 import com.huzzl.db.UsersDAO;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.keys.HmacKey;
-
-import java.util.Date;
 
 import static org.jose4j.jws.AlgorithmIdentifiers.HMAC_SHA256;
 
@@ -20,13 +16,11 @@ public class AuthService {
 
     protected UserLoginDAO userLoginDao;
     protected UsersDAO usersDao;
-    protected JwtAccessTokenDAO jwtAccessTokenDao;
 
-    public AuthService(UserLoginDAO userLoginDao, UsersDAO usersDao, JwtAccessTokenDAO tokenDao, byte[] tokenSecret) {
+    public AuthService(UserLoginDAO userLoginDao, UsersDAO usersDao, byte[] tokenSecret) {
         this.userLoginDao       = userLoginDao;
         this.usersDao           = usersDao;
         this.tokenSecret        = tokenSecret;
-        this.jwtAccessTokenDao  = tokenDao;
     }
 
     public Users findUserById(Long id) {
@@ -52,11 +46,6 @@ public class AuthService {
         return userLoginDao.create(new UserLogin(password, user));
     }
 
-    public JwtAccessToken saveAccessToken(String token, Date expires, Users user) throws Exception {
-        return jwtAccessTokenDao.create(new JwtAccessToken(token, expires, user));
-    }
-
-
     public String generateJwtToken(Users user, String subject) throws Exception {
 
         final JwtClaims claims = new JwtClaims();
@@ -78,11 +67,11 @@ public class AuthService {
 
     }
 
-    public Date getJwtExpiration() throws Exception {
+    public Long getJwtExpiration() throws Exception {
         final JwtClaims claims = new JwtClaims();
         claims.setExpirationTimeMinutesInTheFuture(60);
 
-        return new java.util.Date(claims.getExpirationTime().getValueInMillis());
+        return claims.getExpirationTime().getValueInMillis();
 
     }
 }

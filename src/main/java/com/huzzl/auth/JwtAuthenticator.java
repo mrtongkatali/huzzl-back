@@ -1,30 +1,87 @@
 package com.huzzl.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.huzzl.core.AuthUser;
 import io.dropwizard.auth.Authenticator;
 import org.apache.commons.lang3.StringUtils;
+import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.JwtContext;
+import redis.clients.jedis.Jedis;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 
 public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
 
-    public Optional<AuthUser> authenticate(JwtContext context)  {
+    /**
+     * @param context
+     * @return Boolean
+     */
+    public Boolean validateToken(JwtContext context) {
 
         try {
 
-            final Long user_id          = Long.parseLong(context.getJwtClaims().getClaimValue("user_id").toString());
-            final String claim_roles    = context.getJwtClaims().getClaimValue("roles").toString();
+            /**
+             * @Implementation: Directly parse the content of the yml configuration file since currently
+             * there is no way to inject the configuration class to authenticator class (not sure how to do it)
+             */
+            final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            Map<String, String> redis = mapper.readValue(new File("src/main/config/development.yml"), RedisConfig.class).getRedis();
+
+            // Reads the string as 192.168.1.1:8888 - we need to get the host and port separately.
+            String[] hostport = redis.get("endpoint").split(":");
+
+            Jedis jedis = new Jedis(hostport[0], Integer.parseInt(hostport[1]) );
+            jedis.auth(redis.get("password"));
+            jedis.connect();
+
+            JwtClaims claims = context.getJwtClaims();
+
+            Long user_id  = Long.parseLong(claims.getClaimValue("user_id").toString());
+            Long expires  = Long.parseLong(claims.getClaimValue("exp").toString());
+
+            String hasSession = jedis.get("tkn-"+user_id+"-"+expires+"000");
+
+            jedis.disconnect();
+            jedis.close();
+
+            if(hasSession.equalsIgnoreCase("1")) {
+                return true;
+            }
+
+        } catch(Exception e) {
+            // LOG ERROR HERE
+        }
+
+        return false;
+    }
+
+    public Optional<AuthUser> authenticate(JwtContext context)  {
+
+        /**
+         * Added security layer - Double checks the validity of token on the server so that when
+         * the user signs out (on the frontend), that jwt token will no longer valid.
+         */
+        if(!validateToken(context) ) {
+            return Optional.empty();
+        }
+
+        try {
+
+            JwtClaims claims = context.getJwtClaims();
+
+            final Long user_id          = Long.parseLong(claims.getClaimValue("user_id").toString());
+            final String claim_roles    = claims.getClaimValue("roles").toString();
             final Set<String> roles     = new HashSet<String>(Arrays.asList(StringUtils.join(claim_roles, ", ").replaceAll(", $", "")));
 
             return Optional.of(new AuthUser(
                     user_id,
-                    context.getJwtClaims().getStringClaimValue("firstname"),
-                    context.getJwtClaims().getStringClaimValue("lastname"),
-                    context.getJwtClaims().getStringClaimValue("email_address"),
+                    claims.getStringClaimValue("firstname"),
+                    claims.getStringClaimValue("lastname"),
+                    claims.getStringClaimValue("email_address"),
                     roles
                 ));
         }
@@ -33,4 +90,13 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
         }
     }
 
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+class RedisConfig {
+
+    @JsonProperty
+    private Map<String,String> redis;
+
+    public Map<String,String> getRedis() { return redis; }
 }

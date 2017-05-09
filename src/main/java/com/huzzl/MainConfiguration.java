@@ -1,5 +1,6 @@
 package com.huzzl;
 
+import com.bendb.dropwizard.redis.JedisFactory;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayFactory;
@@ -30,6 +31,14 @@ public class MainConfiguration extends Configuration {
     @NotNull
     @JsonProperty("flyway")
     private FlywayFactory flywayFactory = new FlywayFactory();
+
+    @NotNull
+    @JsonProperty
+    private JedisFactory redis;
+
+    public JedisFactory getJedisFactory() { return redis; }
+
+    public void setJedisFactory(JedisFactory jedisFactory) { this.redis = jedisFactory; }
 
     public DataSourceFactory getDataSourceFactory() {
         return database;
