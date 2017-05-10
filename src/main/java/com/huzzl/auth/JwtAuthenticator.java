@@ -29,12 +29,13 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
              */
             final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-            String filename = (System.getenv("ENVI") == "prod" ? "production.yml" : "development.yml");
+            String filename = (System.getenv("ENVI").equalsIgnoreCase("prod") ? "production.yml" : "development.yml");
             Map<String, String> redis = mapper.readValue(new File("src/main/config/"+filename), GenericSerializer.class).getRedis();
 
             // Reads the string as 192.168.1.1:8888 - we need to get the host and port separately.
             String[] hostport = redis.get("endpoint").split(":");
 
+            System.out.println("\n\nENVIRONMENT: " + System.getenv("ENVI"));
             System.out.println("\n #### Loaded file configuration :" + filename);
             System.out.println("\n #### Redis Config: " + hostport + " / " + redis.get("password") + " / ");
 
