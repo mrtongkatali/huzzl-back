@@ -35,6 +35,9 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
             // Reads the string as 192.168.1.1:8888 - we need to get the host and port separately.
             String[] hostport = redis.get("endpoint").split(":");
 
+            System.out.println("\n #### Loaded file configuration :" + filename);
+            System.out.println("\n #### Redis Config: " + hostport + " / " + redis.get("password") + " / ");
+
             Jedis jedis = new Jedis(hostport[0], Integer.parseInt(hostport[1]) );
             jedis.auth(redis.get("password"));
             jedis.connect();
@@ -46,10 +49,7 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
 
             String hasSession = jedis.get("tkn-"+user_id+"-"+expires+"000");
 
-
             System.out.println("\n\n #### hasSession :" + hasSession);
-            System.out.println("\n #### Loaded file configuration :" + filename);
-            System.out.println("\n #### Redis Config: " + hostport + " / " + redis.get("password") + " / ");
 
             jedis.disconnect();
             jedis.close();
