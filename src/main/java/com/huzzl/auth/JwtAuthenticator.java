@@ -46,6 +46,9 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
 
             String hasSession = jedis.get("tkn-"+user_id+"-"+expires+"000");
 
+
+            System.out.println("\n\n #### hasSession :" + hasSession);
+
             jedis.disconnect();
             jedis.close();
 
@@ -67,6 +70,8 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
          * the user signs out (on the frontend), that jwt token will no longer valid.
          */
         if(!validateToken(context) ) {
+
+            System.out.println("\n\n #### Token not found :");
             return Optional.empty();
         }
 
