@@ -29,9 +29,9 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
              */
 
             String[] hostport;
-            String host     = "";
-            String port     = "";
-            String password = "";
+            String host;
+            String port;
+            String password;
 
             if (System.getenv("ENVI").equalsIgnoreCase("prod")) {
                 host = System.getenv("REDIS_ENDPOINT");
@@ -39,7 +39,10 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
                 password    = System.getenv("REDIS_PASSWORD");
 
             } else {
-                
+
+                /**
+                 * If on development, manually load/parse the yml config
+                 */
                 final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
                 Map<String, String> redis = mapper.readValue(new File("src/main/config/development.yml"), GenericSerializer.class).getRedis();
 
@@ -49,9 +52,6 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
                 port = hostport[1];
                 password = redis.get("password");
             }
-
-            System.out.println("\n\nENVIRONMENT: " + System.getenv("ENVI"));
-            System.out.println("\n #### Redis Config: " +  host + " / " + password + " / ");
 
             Jedis jedis = new Jedis(host, Integer.parseInt(port) );
             jedis.auth(password);
@@ -74,8 +74,6 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
             }
 
         } catch(Exception e) {
-            // LOG ERROR HERE
-
             e.printStackTrace();
         }
 
@@ -89,8 +87,6 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
          * the user signs out (on the frontend), that jwt token will no longer valid.
          */
         if(!validateToken(context) ) {
-
-            System.out.println("\n\n #### Token not found :");
             return Optional.empty();
         }
 
