@@ -1,10 +1,9 @@
 package com.huzzl.auth;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.huzzl.core.AuthUser;
+import com.huzzl.core.GenericSerializer;
 import io.dropwizard.auth.Authenticator;
 import org.apache.commons.lang3.StringUtils;
 import org.jose4j.jwt.JwtClaims;
@@ -29,7 +28,9 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
              * there is no way to inject the configuration class to authenticator class (not sure how to do it)
              */
             final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            Map<String, String> redis = mapper.readValue(new File("src/main/config/development.yml"), RedisConfig.class).getRedis();
+
+            String filename = (System.getenv("ENVI") == "prod" ? "production.yml" : "development.yml");
+            Map<String, String> redis = mapper.readValue(new File("src/main/config/"+filename), GenericSerializer.class).getRedis();
 
             // Reads the string as 192.168.1.1:8888 - we need to get the host and port separately.
             String[] hostport = redis.get("endpoint").split(":");
@@ -90,13 +91,4 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
         }
     }
 
-}
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-class RedisConfig {
-
-    @JsonProperty
-    private Map<String,String> redis;
-
-    public Map<String,String> getRedis() { return redis; }
 }
