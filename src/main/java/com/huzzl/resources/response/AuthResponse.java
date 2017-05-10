@@ -10,13 +10,14 @@ public class AuthResponse<T> {
     private Integer code;
     private Boolean isSuccessful;
 
-    public AuthResponse(T user, String message, String token, Integer code, Boolean isSuccessful) {
+    public AuthResponse(T user, String message, String token, String expires, Integer code, Boolean isSuccessful) {
         this.message        = message;
         this.code           = code;
         this.isSuccessful   = isSuccessful;
 
         result.put("user", user);
         result.put("token", token);
+        result.put("expires", expires);
     }
 
     public Map<String, Object> getResult() { return result; }

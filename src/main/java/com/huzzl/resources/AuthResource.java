@@ -5,6 +5,7 @@ import com.huzzl.resources.response.AuthResponse;
 import com.huzzl.resources.response.GenericResponse;
 import com.huzzl.service.AuthService;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.jose4j.jwt.consumer.JwtContext;
 import redis.clients.jedis.Jedis;
 
 import javax.annotation.security.RolesAllowed;
@@ -76,6 +77,7 @@ public class AuthResource {
                                 newUser,
                                 "User has been successfully created.",
                                 token,
+                                expires.toString(),
                                 Response.Status.OK.getStatusCode(),
                                 true
                         )
@@ -122,6 +124,7 @@ public class AuthResource {
                        login.user,
                        "Authentication successful",
                        token,
+                       expires.toString(),
                        Response.Status.OK.getStatusCode(),
                        true
                     )).build();
@@ -138,6 +141,30 @@ public class AuthResource {
         return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
     }
 
+    @POST
+    @Path("/logout")
+    @UnitOfWork
+    public Response logout(@Valid GenericSerializer serializer, @Context Jedis jedis) {
+
+        data = new HashMap();
+
+        try {
+            String key = "tkn-"+serializer.getUserId() + "-" + serializer.getExpires();
+            String isDeleted = jedis.del(key).toString();
+
+            if(isDeleted.equalsIgnoreCase("1")) {
+                return Response.ok(new GenericResponse<>(data, "Successfully logged out.", 200, false)).build();
+            }
+
+        } catch (Exception e) {
+            // LOG ERROR HERE
+            errorMessage = "INTERNAL_ERROR";
+        }
+
+        errorMessage = "Token does not exists.";
+
+        return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
+    }
 
     @GET
     @Path("/sample-response-template")
