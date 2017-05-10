@@ -48,6 +48,8 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
 
 
             System.out.println("\n\n #### hasSession :" + hasSession);
+            System.out.println("\n #### Loaded file configuration :" + filename);
+            System.out.println("\n #### Redis Config: " + hostport + " / " + redis.get("password") + " / ");
 
             jedis.disconnect();
             jedis.close();
@@ -58,6 +60,7 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
 
         } catch(Exception e) {
             // LOG ERROR HERE
+
             e.printStackTrace();
         }
 
