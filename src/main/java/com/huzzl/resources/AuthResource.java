@@ -153,7 +153,7 @@ public class AuthResource {
             String isDeleted = jedis.del(key).toString();
 
             if(isDeleted.equalsIgnoreCase("1")) {
-                return Response.ok(new GenericResponse<>(data, "Successfully logged out.", 200, false)).build();
+                return Response.ok(new GenericResponse<>(data, "Successfully logged out.", 200, true)).build();
             }
 
         } catch (Exception e) {
