@@ -27,20 +27,34 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
              * @Implementation: Directly parse the content of the yml configuration file since currently
              * there is no way to inject the configuration class to authenticator class (not sure how to do it)
              */
-            final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-            String filename = (System.getenv("ENVI").equalsIgnoreCase("prod") ? "production.yml" : "development.yml");
-            Map<String, String> redis = mapper.readValue(new File("src/main/config/"+filename), GenericSerializer.class).getRedis();
+            String[] hostport;
+            String host     = "";
+            String port     = "";
+            String password = "";
 
-            // Reads the string as 192.168.1.1:8888 - we need to get the host and port separately.
-            String[] hostport = redis.get("endpoint").split(":");
+            if (System.getenv("ENVI").equalsIgnoreCase("prod")) {
+                host = System.getenv("REDIS_ENDPOINT");
+                port = System.getenv("REDIS_PORT");
+                password    = System.getenv("REDIS_PASSWORD");
+
+            } else {
+                
+                final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+                Map<String, String> redis = mapper.readValue(new File("src/main/config/development.yml"), GenericSerializer.class).getRedis();
+
+                // Reads the string as 192.168.1.1:8888 - we need to get the host and port separately.
+                hostport = redis.get("endpoint").split(":");
+                host = hostport[0];
+                port = hostport[1];
+                password = redis.get("password");
+            }
 
             System.out.println("\n\nENVIRONMENT: " + System.getenv("ENVI"));
-            System.out.println("\n #### Loaded file configuration :" + filename);
-            System.out.println("\n #### Redis Config: " + hostport + " / " + redis.get("password") + " / ");
+            System.out.println("\n #### Redis Config: " +  host + " / " + password + " / ");
 
-            Jedis jedis = new Jedis(hostport[0], Integer.parseInt(hostport[1]) );
-            jedis.auth(redis.get("password"));
+            Jedis jedis = new Jedis(host, Integer.parseInt(port) );
+            jedis.auth(password);
             jedis.connect();
 
             JwtClaims claims = context.getJwtClaims();
