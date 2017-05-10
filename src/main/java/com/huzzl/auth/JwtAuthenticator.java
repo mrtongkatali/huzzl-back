@@ -34,9 +34,9 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
             String password;
 
             if (System.getenv("ENVI").equalsIgnoreCase("prod")) {
-                host = System.getenv("REDIS_ENDPOINT");
-                port = System.getenv("REDIS_PORT");
-                password    = System.getenv("REDIS_PASSWORD");
+                host     = System.getenv("REDIS_ENDPOINT");
+                port     = System.getenv("REDIS_PORT");
+                password = System.getenv("REDIS_PASSWORD");
 
             } else {
 
