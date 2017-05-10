@@ -58,6 +58,7 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
 
         } catch(Exception e) {
             // LOG ERROR HERE
+            e.printStackTrace();
         }
 
         return false;
