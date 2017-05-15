@@ -137,7 +137,7 @@ public class MainApplication extends Application<MainConfiguration> {
                 env.servlets().addFilter("CORS", CrossOriginFilter.class);
 
         cors.setInitParameter("allowedOrigins", "*");
-        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin,Authorization,Test-Custom-Header");
         cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
 
         // Add URL Mapping
