@@ -32,7 +32,6 @@ dependencies {
     compile (
             'io.dropwizard:dropwizard-core:' + dropwizardVersion,
             'io.dropwizard:dropwizard-hibernate:' + dropwizardVersion,
-            'io.dropwizard:dropwizard-migrations:' + dropwizardVersion,
             'io.dropwizard:dropwizard-auth:' + dropwizardVersion,
             'io.dropwizard.modules:dropwizard-flyway:1.1.0-1',
             'com.github.toastshaman:dropwizard-auth-jwt:1.0.6-0',
