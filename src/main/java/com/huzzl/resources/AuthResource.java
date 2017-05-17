@@ -95,20 +95,19 @@ public class AuthResource {
     @POST
     @Path("/login")
     @UnitOfWork
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response login(@FormParam("username") String username, @FormParam("password") String password, @Context Jedis jedis) {
+    public Response login(@Valid GenericSerializer serializer, @Context Jedis jedis) {
 
         data = new HashMap();
-
+        
         try {
 
-            UserLogin login = authService.findUserLoginByEmailAddress(username);
+            UserLogin login = authService.findUserLoginByEmailAddress(serializer.getUsername());
 
             if(login != null) {
 
                 PasswordStorage pass = new PasswordStorage();
 
-                if(pass.verifyPassword(password, login.getPasswordHash()) == true) {
+                if(pass.verifyPassword(serializer.getPassword(), login.getPasswordHash()) == true) {
 
                     /**
                      * Generate jwt token and add it to response container
