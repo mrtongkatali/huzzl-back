@@ -35,12 +35,11 @@ public class JwtAuthenticator implements Authenticator<JwtContext, AuthUser> {
 
             String environment = System.getenv("ENVI");
 
-            if (environment != null && environment == "prod") {
-                host     = System.getenv("REDIS_ENDPOINT");
-                port     = System.getenv("REDIS_PORT");
-                password = System.getenv("REDIS_PASSWORD");
+            host     = System.getenv("REDIS_ENDPOINT");
+            port     = System.getenv("REDIS_PORT");
+            password = System.getenv("REDIS_PASSWORD");
 
-            } else {
+            if(environment == null) {
 
                 /**
                  * If on development, manually load/parse the yml config
