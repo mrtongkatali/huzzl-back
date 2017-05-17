@@ -10,6 +10,7 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.annotation.security.RolesAllowed;
+import javax.management.Query;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Path("/1.0/task")
@@ -106,4 +108,40 @@ public class TaskResource {
 
         return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
     }
+
+    @GET
+    @UnitOfWork
+    @RolesAllowed({"DEFAULT", "ADMIN"})
+    public Response getTaskById(
+            @Context SecurityContext context,
+            @QueryParam("status") Integer status,
+            @QueryParam("page") Integer page,
+            @QueryParam("count") Integer count
+    ) {
+
+        data = new HashMap();
+
+        try {
+            AuthUser user = (AuthUser) context.getUserPrincipal();
+
+            count   = ( count == null ? 10 : count);
+            page    = ( page == null ? 0 : page);
+            status  = ( status == null ? 1 : status);
+
+            Number rows = taskService.countAllTaskByUserId(user.getId(), status);
+            List<Task> task = taskService.findAllTaskByUserId(user.getId(), status, count, page);
+
+            data.put("task", task);
+            data.put("total_count", rows);
+
+            return Response.ok(new GenericResponse<Task>(data, "Successful", 200, true)).build();
+
+        } catch (Exception e) {
+            // LOG EXCEPTION HERE
+            errorMessage = "INTERNAL_ERROR";
+        }
+
+        return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
+    }
+
 }
