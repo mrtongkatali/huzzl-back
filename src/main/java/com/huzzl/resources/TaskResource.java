@@ -91,14 +91,24 @@ public class TaskResource {
 
             if(existingTask != null) {
 
-                task.setId(id);
-                taskService.update(task);
+                errorMessage = "You have no permission to update the data.";
 
-                data.put("task", task);
+                Boolean hasPermission = authService.checkOwnership(auth, existingTask.getUser().getId());
 
-                return Response.ok(new GenericResponse<Task>(data, "Successful", 200, true)).build();
+                if(hasPermission) {
+
+                    task.setId(id);
+                    task.setUser(existingTask.getUser());
+
+                    taskService.update(task);
+
+                    data.put("task", task);
+
+                    return Response.ok(new GenericResponse<Task>(data, "Successful", 200, true)).build();
+                }
+
             } else {
-                errorMessage = "Task does not exists. Task update failed.";
+                errorMessage = "Task does not exists. Update failed.";
             }
 
         } catch (Exception e) {

@@ -62,6 +62,10 @@ public class Task extends BaseEntity {
     @JsonProperty
     public Integer status() { return status; }
 
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
     @JsonIgnore
     public Users getUser() { return user; }
 }

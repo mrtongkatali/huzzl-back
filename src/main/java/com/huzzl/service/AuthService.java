@@ -1,5 +1,6 @@
 package com.huzzl.service;
 
+import com.huzzl.core.AuthUser;
 import com.huzzl.core.UserLogin;
 import com.huzzl.core.Users;
 import com.huzzl.db.UserLoginDAO;
@@ -44,6 +45,10 @@ public class AuthService {
 
     public UserLogin createNewCredentials(String password, Users user) throws Exception {
         return userLoginDao.create(new UserLogin(password, user));
+    }
+
+    public Boolean checkOwnership(AuthUser user, Long user_id) {
+        return (user.getId() == user_id);
     }
 
     public String generateJwtToken(Users user, String subject) throws Exception {
