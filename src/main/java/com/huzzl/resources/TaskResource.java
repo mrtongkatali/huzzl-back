@@ -67,13 +67,13 @@ public class TaskResource {
 
             if(user != null) {
                 Task newTask = taskService.createNewTask(
-                        new Task(
-                                task.getTaskTitle(),
-                                task.getTaskDescription(),
-                                1,
-                                task.getSort(),
-                                user
-                        )
+                    new Task(
+                        task.getTaskTitle(),
+                        task.getTaskDescription(),
+                        1,
+                        task.getSort(),
+                        user
+                    )
                 );
 
                 data.put("task", newTask);
@@ -96,16 +96,16 @@ public class TaskResource {
     @UnitOfWork
     @RolesAllowed({"DEFAULT", "ADMIN"})
     @ApiOperation(
-            value = "Endpoint for updating task",
-            notes = "Returns the task object when successfully updated.",
-            response = Task.class
+        value = "Endpoint for updating task",
+        notes = "Returns the task object when successfully updated.",
+        response = Task.class
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Missing required fields"),
-            @ApiResponse(code = 401, message = "Missing auth token in header")
+        @ApiResponse(code = 400, message = "Missing required fields"),
+        @ApiResponse(code = 401, message = "Missing auth token in header")
     })
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "JWT Authentication token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Authentication token", required = true, dataType = "string", paramType = "header")
     })
     public Response updateTask(@Context SecurityContext context, @Valid Task task, @PathParam("id") Long id) {
 
@@ -150,18 +150,18 @@ public class TaskResource {
     @UnitOfWork
     @RolesAllowed({"DEFAULT", "ADMIN"})
     @ApiOperation(
-            value = "Endpoint for getting all tasks by specific user",
-            notes = "Default returned data is 10",
-            response = Task.class
+        value = "Endpoint for getting all tasks by specific user",
+        notes = "Default returned data is 10",
+        response = Task.class
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "JWT Authentication token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Authentication token", required = true, dataType = "string", paramType = "header")
     })
     public Response getTaskByUserId(
-            @Context SecurityContext context,
-            @QueryParam("status") Integer status,
-            @QueryParam("page") Integer page,
-            @QueryParam("count") Integer count
+        @Context SecurityContext context,
+        @QueryParam("status") Integer status,
+        @QueryParam("page") Integer page,
+        @QueryParam("count") Integer count
     ) {
 
         data = new HashMap();

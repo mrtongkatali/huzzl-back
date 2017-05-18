@@ -5,10 +5,7 @@ import com.huzzl.resources.response.AuthResponse;
 import com.huzzl.resources.response.GenericResponse;
 import com.huzzl.service.AuthService;
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.jose4j.jwt.consumer.JwtContext;
 import redis.clients.jedis.Jedis;
 
@@ -44,12 +41,12 @@ public class AuthResource {
     @Path("/register")
     @UnitOfWork
     @ApiOperation(
-            value = "Endpoint for registering new user",
-            notes = "Returns the user object when successfully created.",
-            response = Users.class
+        value = "Endpoint for registering new user",
+        notes = "Returns the user object when successfully created.",
+        response = Users.class
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Missing required fields"),
+        @ApiResponse(code = 400, message = "Missing required fields"),
     })
     public Response registerUser(@Valid Users u, @Context Jedis jedis) {
 
@@ -109,6 +106,10 @@ public class AuthResource {
     @POST
     @Path("/login")
     @UnitOfWork
+    @ApiOperation(
+        value = "Endpoint for authenticating user",
+        notes = "Returns the user object and jwt token when successfully authenticated."
+    )
     public Response login(@Valid GenericSerializer serializer, @Context Jedis jedis) {
 
         data = new HashMap();
@@ -157,6 +158,10 @@ public class AuthResource {
     @POST
     @Path("/logout")
     @UnitOfWork
+    @ApiOperation(
+        value = "Endpoint for de-authorizing user.",
+        notes = "This will destroy its current session."
+    )
     public Response logout(@Valid GenericSerializer serializer, @Context Jedis jedis) {
 
         data = new HashMap();
