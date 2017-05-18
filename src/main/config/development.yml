@@ -5,6 +5,9 @@ jwtTokenSecret: dfwzsdzwh823zebdwdz772632gdsbd1
 
 swagger:
   resourcePackage: com.huzzl.resources
+  schemes:
+      - http
+      - https
 
 server:
   applicationConnectors:

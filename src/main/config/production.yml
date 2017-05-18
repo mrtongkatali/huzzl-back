@@ -6,6 +6,9 @@ jwtTokenSecret: ${JWT_TOKEN_SECRET}
 
 swagger:
   resourcePackage: com.huzzl.resources
+  schemes:
+      - http
+      - https
 
 server:
   registerDefaultExceptionMappers: false
