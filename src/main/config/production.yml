@@ -4,6 +4,9 @@ defaultName: Stranger
 
 jwtTokenSecret: ${JWT_TOKEN_SECRET}
 
+swagger:
+  resourcePackage: com.huzzl.resources
+
 server:
   registerDefaultExceptionMappers: false
   applicationConnectors:
