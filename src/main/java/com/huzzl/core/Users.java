@@ -3,6 +3,7 @@ package com.huzzl.core;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.jackson.JsonSnakeCase;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
@@ -57,17 +58,22 @@ public class Users extends BaseEntity {
     }
 
     @JsonProperty
+    @ApiModelProperty(value = "User's firstname", required = true)
     public String getFirstName() { return firstName; }
 
     @JsonProperty
+    @ApiModelProperty(value = "Users's lastname", required = true)
     public String getLastName() { return lastName; }
 
     @JsonProperty
+    @ApiModelProperty(value = "User's valid email address", required = true)
     public String getEmailAddress() { return emailAddress; }
 
     @JsonProperty
+    @ApiModelProperty(value = "Status of task. 0 - Inactive , 1 - Active", required = true, allowableValues = "0,1")
     public Integer status() { return status; }
 
+    @ApiModelProperty(value = "Strong password must contain atleast a number, uppercase and special characters. Minimum of 8 characters.", required = true)
     public String getPassword() { return password; }
 
     /**

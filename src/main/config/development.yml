@@ -3,6 +3,9 @@ template: Hello, %s!
 defaultName: Stranger
 jwtTokenSecret: dfwzsdzwh823zebdwdz772632gdsbd1
 
+swagger:
+  resourcePackage: com.huzzl.resources
+
 server:
   applicationConnectors:
       - type: http
@@ -40,7 +43,6 @@ database:
 
   # whether or not idle connections should be validated
   checkConnectionWhileIdle: false
-
 
 redis:
   # The redis server's address; required.

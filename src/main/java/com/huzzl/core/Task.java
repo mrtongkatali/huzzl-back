@@ -3,6 +3,7 @@ package com.huzzl.core;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.jackson.JsonSnakeCase;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -51,15 +52,19 @@ public class Task extends BaseEntity {
     }
 
     @JsonProperty
+    @ApiModelProperty(value = "Title of task", required = true)
     public String getTaskTitle() { return taskTitle; }
 
     @JsonProperty
+    @ApiModelProperty(value = "Description of task")
     public String getTaskDescription() { return taskDescription; }
 
     @JsonProperty
+    @ApiModelProperty(value = "Order of task")
     public Integer getSort() { return sort; }
 
     @JsonProperty
+    @ApiModelProperty(value = "Status of task. 0 - Inactive , 1 - Active", required = true, allowableValues = "0,1")
     public Integer status() { return status; }
 
     public void setUser(Users user) {

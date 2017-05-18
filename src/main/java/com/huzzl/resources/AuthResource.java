@@ -5,6 +5,10 @@ import com.huzzl.resources.response.AuthResponse;
 import com.huzzl.resources.response.GenericResponse;
 import com.huzzl.service.AuthService;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.jose4j.jwt.consumer.JwtContext;
 import redis.clients.jedis.Jedis;
 
@@ -23,6 +27,8 @@ import java.util.Map;
 @Path("/1.0/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = "Authentication (1.0)")
+
 public class AuthResource {
 
     private AuthService authService;
@@ -37,6 +43,14 @@ public class AuthResource {
     @POST
     @Path("/register")
     @UnitOfWork
+    @ApiOperation(
+            value = "Endpoint for registering new user",
+            notes = "Returns the user object when successfully created.",
+            response = Users.class
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Missing required fields"),
+    })
     public Response registerUser(@Valid Users u, @Context Jedis jedis) {
 
         /**
@@ -164,16 +178,4 @@ public class AuthResource {
 
         return Response.ok(new GenericResponse<>(data, errorMessage, 200, false)).build();
     }
-
-    @GET
-    @Path("/sample-response-template")
-    @RolesAllowed("DEFAULT")
-    public Response getResponseTemplate(@Context SecurityContext context) {
-
-        AuthUser user = (AuthUser) context.getUserPrincipal();
-
-        System.out.print("User : " + user.getId() + " / "  + user.getName() + " / " + user.getEmailAddress() + " | NIL");
-        return Response.ok("ASDADAS").build();
-    }
-
 }

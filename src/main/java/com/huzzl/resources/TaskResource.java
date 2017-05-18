@@ -8,6 +8,7 @@ import com.huzzl.service.AuthService;
 import com.huzzl.service.TaskService;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.swagger.annotations.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.management.Query;
@@ -25,6 +26,8 @@ import java.util.Map;
 @Path("/1.0/task")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = "Task (1.0)")
+
 public class TaskResource {
 
     private AuthService authService;
@@ -41,6 +44,18 @@ public class TaskResource {
     @POST
     @UnitOfWork
     @RolesAllowed({"DEFAULT", "ADMIN"})
+    @ApiOperation(
+        value = "Endpoint for creating task",
+        notes = "Returns the task object when successfully created.",
+        response = Task.class
+    )
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "Missing required fields"),
+        @ApiResponse(code = 401, message = "Missing auth token in header")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "JWT Authentication token", required = true, dataType = "string", paramType = "header")
+    })
     public Response createTask(@Context SecurityContext context, @Valid Task task) {
 
         data = new HashMap();
@@ -80,6 +95,18 @@ public class TaskResource {
     @Path("/{id}")
     @UnitOfWork
     @RolesAllowed({"DEFAULT", "ADMIN"})
+    @ApiOperation(
+            value = "Endpoint for updating task",
+            notes = "Returns the task object when successfully updated.",
+            response = Task.class
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Missing required fields"),
+            @ApiResponse(code = 401, message = "Missing auth token in header")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "JWT Authentication token", required = true, dataType = "string", paramType = "header")
+    })
     public Response updateTask(@Context SecurityContext context, @Valid Task task, @PathParam("id") Long id) {
 
         data = new HashMap();
@@ -122,7 +149,15 @@ public class TaskResource {
     @GET
     @UnitOfWork
     @RolesAllowed({"DEFAULT", "ADMIN"})
-    public Response getTaskById(
+    @ApiOperation(
+            value = "Endpoint for getting all tasks by specific user",
+            notes = "Default returned data is 10",
+            response = Task.class
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "JWT Authentication token", required = true, dataType = "string", paramType = "header")
+    })
+    public Response getTaskByUserId(
             @Context SecurityContext context,
             @QueryParam("status") Integer status,
             @QueryParam("page") Integer page,
