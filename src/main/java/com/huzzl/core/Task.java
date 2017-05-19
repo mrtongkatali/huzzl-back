@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
     {
         @NamedQuery( name = "Task.allTask", query = "SELECT t FROM Task t"),
         @NamedQuery( name = "Task.findById", query = "SELECT t FROM Task t WHERE t.id = :id"),
-        @NamedQuery( name = "Task.getAllTaskByUserId", query = "SELECT t FROM Task t WHERE t.user.id = :user AND t.status = :status"),
+        @NamedQuery( name = "Task.getAllTaskByUserId", query = "SELECT t FROM Task t WHERE t.user.id = :user AND t.status = :status ORDER BY sort DESC"),
         @NamedQuery( name = "Task.countAllTaskByUserId", query = "SELECT count(t.id) FROM Task t WHERE t.user.id = :user AND t.status = :status")
 
     }
