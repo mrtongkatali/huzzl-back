@@ -34,8 +34,7 @@ public class BaseEntity implements Serializable  {
         this.date_added      = new Date();
         this.last_modified   = new Date();
     }
-
-    @ApiModelProperty(value = "Entity id", hidden = true)
+    
     public Long getId() {return id; }
 
     @ApiModelProperty(value = "Date Added", hidden = true)
